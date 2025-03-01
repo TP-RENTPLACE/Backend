@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: rentplace
+    environment:
+      POSTGRES_USER: kattsyn
+      POSTGRES_PASSWORD: katt
+      POSTGRES_DB: rentplace_db
+    ports:
+      - "5432:5432"
