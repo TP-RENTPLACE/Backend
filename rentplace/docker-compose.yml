@@ -1,10 +1,23 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: rentplace
+    container_name: rentplace_postgres
     environment:
       POSTGRES_USER: kattsyn
       POSTGRES_PASSWORD: katt
       POSTGRES_DB: rentplace_db
     ports:
       - "5432:5432"
+  backend:
+    container_name: rentplace_main_service
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rentplace_db
+      SPRING_DATASOURCE_USER: kattsyn
+      SPRING_DATASOURCE_PASSWORD: katt
+      SERVER_PORT: 8080
