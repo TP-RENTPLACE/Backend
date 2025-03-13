@@ -8,3 +8,5 @@ spring:
     password: katt
   jpa:
     generate-ddl: true
+api:
+  path: api/v1
