@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: rentplace
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/rentplace_db
+    username: kattsyn
+    password: katt
+  jpa:
+    generate-ddl: true
+api:
+  path: api/v1
