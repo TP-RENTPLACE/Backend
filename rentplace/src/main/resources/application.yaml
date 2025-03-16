@@ -2,11 +2,13 @@ spring:
   application:
     name: rentplace
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/rentplace_db
-    username: kattsyn
-    password: katt
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test_db;MODE=PostgreSQL
+    username: sa
+    password:
   jpa:
     generate-ddl: true
+    hibernate:
+      ddl-auto: update
 api:
   path: api/v1
