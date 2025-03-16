@@ -5,18 +5,18 @@ on:
     branches:
       - main
       - development
-      - feature/*
-      - bugfix/*
-      - release/*
+      - feature/**
+      - bugfix/**
+      - release/**
     paths:
       - 'rentplace/**'
   pull_request:
     branches:
       - main
       - development
-      - feature/*
-      - bugfix/*
-      - release/*
+      - feature/**
+      - bugfix/**
+      - release/**
     paths:
       - 'rentplace/**'
 jobs:
@@ -28,5 +28,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - run: ./gradlew build --no-daemon
-      - run: ./gradlew test
+          cache: 'gradle'
+      - name: Build
+        working-directory: rentplace
+        run: ./gradlew build --no-daemon
+
+      - name: Test
+        working-directory: rentplace
+        run: ./gradlew test
