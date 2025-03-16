@@ -14,4 +14,9 @@ public class PropertyController {
         return ResponseEntity.ok("Hello World");
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("TESTING CI-CD");
+    }
+
 }
