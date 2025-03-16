@@ -9,6 +9,6 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 api:
   path: api/v1
