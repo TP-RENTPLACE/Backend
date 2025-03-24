@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "SocialNetwork API",
-                description = "SocialNetwork", version = "1.0.0",
+                title = "rentplace API",
+                description = "rentplace", version = "1.0.0",
                 contact = @Contact(
                         name = "Kattsyn Vladimir",
                         email = "warshard1337@gmail.com"
