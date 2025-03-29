@@ -38,14 +38,14 @@ public class CategoryController {
     }
 
     @Operation(
-            summary = "Получение объявления",
-            description = "Получение объявления по id")
+            summary = "Получение категории",
+            description = "Получение категории по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = Category.class))
             }),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Объявление не найдено", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Категория не найдена", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
@@ -58,7 +58,7 @@ public class CategoryController {
     }
 
     @Operation(
-            summary = "Создать категория",
+            summary = "Создать категорию",
             description = "Создать категорию"
     )
     @ApiResponses(value = {
