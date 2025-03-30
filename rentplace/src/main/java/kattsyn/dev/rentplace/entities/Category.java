@@ -17,10 +17,11 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "id категории", example = "3")
     @Column(name = "category_id", nullable = false)
     private long categoryId;
     @Column(name = "name", nullable = false)
-    @Schema(description = "Название категории")
+    @Schema(description = "Название категории", example = "Кемпинг")
     private String name;
 
 }
