@@ -28,7 +28,7 @@ public class CategoryController {
             summary = "Получение всех категорий",
             description = "Получение всех категорий")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content),
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Category[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/")
