@@ -18,6 +18,7 @@ services:
       - postgres
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rentplace_db
-      SPRING_DATASOURCE_USER: kattsyn
+      SPRING_DATASOURCE_USERNAME: kattsyn
       SPRING_DATASOURCE_PASSWORD: katt
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SERVER_PORT: 8080
