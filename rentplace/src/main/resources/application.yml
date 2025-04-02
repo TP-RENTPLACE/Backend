@@ -12,3 +12,7 @@ spring:
       ddl-auto: validate
 api:
   path: api/v1
+upload:
+  path: ./uploads
+storage:
+  location: ./uploads/
