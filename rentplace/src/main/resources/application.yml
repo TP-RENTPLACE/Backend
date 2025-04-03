@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
   application:
     name: rentplace
   datasource:
@@ -9,6 +13,10 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 api:
   path: api/v1
+upload:
+  path: ./uploads
+storage:
+  location: ./uploads/

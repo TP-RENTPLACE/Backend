@@ -8,12 +8,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
+import kattsyn.dev.rentplace.enums.ImageType;
+import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.PropertyService;
+import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +30,40 @@ import java.util.List;
 public class PropertyController {
 
     private final PropertyService propertyService;
+    private final ImageService imageService;
+
+    @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Массовая загрузка фотографий",
+            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 10. Максимальный размер каждого файла - 10MB.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image[].class))),
+            @ApiResponse(responseCode = "400", description = "Некорректный запрос (превышено кол-во файлов, неверный формат и т.д.)", content = @Content),
+            @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<List<Image>> uploadMultipleImages(
+            @PathVariable @Parameter(description = "id объявления", example = "10") long id,
+            @Parameter(
+                    description = "Массив файлов фотографий",
+                    required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(type = "string", format = "binary"))
+            ) @RequestPart("files") MultipartFile[] files) {
+
+
+        List<Image> savedImages = propertyService.uploadImages(files, id);
+
+        return ResponseEntity.ok(savedImages);
+    }
+
+    @PostMapping("/{id}/image")
+    public Image uploadPropertyImage(
+            @PathVariable Long id,
+            @RequestParam MultipartFile file) {
+
+        String path = PathResolver.resolvePath(ImageType.PROPERTY, id);
+        return imageService.uploadImage(file, path);
+    }
 
     @Operation(
             summary = "Получение всех объявлений",
@@ -106,6 +146,4 @@ public class PropertyController {
     public ResponseEntity<Property> deleteProperty(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
         return new ResponseEntity<>(propertyService.deleteById(id), HttpStatus.NO_CONTENT);
     }
-
-
 }
