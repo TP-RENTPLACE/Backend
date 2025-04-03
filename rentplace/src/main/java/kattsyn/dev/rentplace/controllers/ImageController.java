@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.entities.Image;
+import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.services.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -37,13 +38,22 @@ public class ImageController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Image> uploadImage(@Parameter(
-            description = "Файл фотографии",
-            required = true,
-            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ) @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(imageService.uploadImage(file));
+    public ResponseEntity<Image> uploadImage(
+            @Parameter(
+                    description = "Файл фотографии",
+                    required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            ) @RequestParam("file") MultipartFile file,
+            @Parameter(
+                    description = "Тип изображения",
+                    required = true,
+                    schema = @Schema(
+                            implementation = ImageType.class)
+            ) @RequestParam ImageType imageType) {
+        return ResponseEntity.ok(imageService.uploadImage(file, imageType));
     }
+
+
 
     @PostMapping(value = "/multiple/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
