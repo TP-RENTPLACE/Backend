@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +23,7 @@ public class Property {
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2000)
     @Schema(description = "Описание имущества", example = "Уютная квартира с видом на водохранилище")
     private String description;
 
@@ -52,5 +54,9 @@ public class Property {
     @Schema(description = "Максимум гостей", example = "7")
     @Column(name = "max_guests")
     private int maxGuests;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "property_id")
+    List<Image> images;
 
 }
