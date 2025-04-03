@@ -3,11 +3,16 @@ package kattsyn.dev.rentplace.services.impl;
 import jakarta.transaction.Transactional;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
 import kattsyn.dev.rentplace.entities.Facility;
+import kattsyn.dev.rentplace.entities.Image;
+import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.mappers.FacilityMapper;
 import kattsyn.dev.rentplace.repositories.FacilityRepository;
 import kattsyn.dev.rentplace.services.FacilityService;
+import kattsyn.dev.rentplace.services.ImageService;
+import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,6 +22,7 @@ public class FacilityServiceImpl implements FacilityService {
 
     private final FacilityRepository facilityRepository;
     private final FacilityMapper facilityMapper;
+    private final ImageService imageService;
 
     @Transactional
     @Override
@@ -51,5 +57,19 @@ public class FacilityServiceImpl implements FacilityService {
         Facility facilityForDeletion = findById(id);
         facilityRepository.delete(facilityForDeletion);
         return facilityForDeletion;
+    }
+
+    @Transactional
+    @Override
+    public void uploadImage(MultipartFile file, long id) {
+        Facility facility = findById(id);
+        String path = PathResolver.resolvePath(ImageType.FACILITY, id);
+
+        if (facility.getImage() != null) {
+            imageService.deleteImage(facility.getImage().getImageId());
+        }
+        Image image = imageService.uploadImage(file, path);
+        facility.setImage(image);
+        facilityRepository.save(facility);
     }
 }

@@ -10,10 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
 import kattsyn.dev.rentplace.entities.Facility;
+import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.services.FacilityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,6 +27,27 @@ import java.util.List;
 public class FacilityController {
 
     private final FacilityService facilityService;
+
+    @Operation(
+            summary = "Загрузка фотографии для категории",
+            description = "Загрузка фотографии для категории"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadImage(
+            @Parameter(
+                    description = "Файл фотографии",
+                    required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            ) @RequestParam("file") MultipartFile file,
+            @PathVariable
+            @Parameter(description = "id категории", example = "10") long id) {
+        facilityService.uploadImage(file, id);
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "Получение всех удобств", description = "Получение всех удобств")
     @ApiResponses(value = {

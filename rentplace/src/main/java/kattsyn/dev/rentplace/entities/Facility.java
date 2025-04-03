@@ -24,4 +24,7 @@ public class Facility {
     @Column(name = "name")
     private String name;
 
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    @JoinColumn(name = "image_id")
+    private Image image;
 }
