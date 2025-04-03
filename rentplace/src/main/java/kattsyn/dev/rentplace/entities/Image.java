@@ -17,12 +17,14 @@ public class Image {
     @Column(name = "image_id")
     private long imageId;
 
-    @Column(name = "file_name")
+    @Column(name = "file_name", length = 400)
     private String fileName;
     @Column(name = "original_file_name")
     private String originalFileName;
     @Column(name = "content_type")
     private String contentType;
+    @Column(name = "additional_path")
+    private String additionalPath;
     @Column(name = "size")
     private long size;
     @Column(name = "is_preview_image")
