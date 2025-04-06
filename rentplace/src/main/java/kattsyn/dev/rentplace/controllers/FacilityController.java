@@ -119,7 +119,7 @@ public class FacilityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Категория не найдена", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
