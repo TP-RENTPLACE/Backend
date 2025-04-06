@@ -1,6 +1,5 @@
 package kattsyn.dev.rentplace.controllers;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,36 +7,37 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kattsyn.dev.rentplace.dtos.FacilityDTO;
-import kattsyn.dev.rentplace.entities.Facility;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
-import kattsyn.dev.rentplace.services.FacilityService;
+import kattsyn.dev.rentplace.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@RequestMapping("${api.path}/facilities")
-@RestController
 @RequiredArgsConstructor
-@Tag(name = "FacilityController", description = "Для взаимодействия с удобствами")
-public class FacilityController {
+@Controller
+@RequestMapping("${api.path}/users")
+@Tag(name = "UserController", description = "Для взаимодействия с пользователями")
+public class UserController {
 
-    private final FacilityService facilityService;
+    private final UserService userService;
 
     @Operation(
-            summary = "Загрузка фотографии для категории",
-            description = "Загрузка фотографии для категории"
+            summary = "Загрузка фотографии для пользователя",
+            description = "Загрузка фотографии для пользователя"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Image> uploadImage(
+    public ResponseEntity<ImageDTO> uploadImage(
             @Parameter(
                     description = "Файл фотографии",
                     required = true,
@@ -46,87 +46,89 @@ public class FacilityController {
             @PathVariable
             @Parameter(description = "id категории", example = "10") long id) {
 
-        return ResponseEntity.ok(facilityService.uploadImage(file, id));
+        return ResponseEntity.ok(userService.uploadImage(file, id));
     }
 
-    @Operation(summary = "Получение всех удобств", description = "Получение всех удобств")
+    @Operation(summary = "Получение всех пользователей", description = "Получение всех пользователей")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Facility[].class))),
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/")
-    public ResponseEntity<List<Facility>> findAll() {
-        return ResponseEntity.ok(facilityService.findAll());
+    public ResponseEntity<List<UserDTO>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
     }
 
     @Operation(
-            summary = "Получить удобство",
-            description = "Получить удобство по id"
+            summary = "Получить пользователя",
+            description = "Получить dto пользователя по id"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Facility.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))
             }),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Facility> findById(
+    public ResponseEntity<UserDTO> findById(
             @PathVariable
-            @Parameter(description = "id удобства", example = "2") long id) {
-        return ResponseEntity.ok(facilityService.findById(id));
+            @Parameter(description = "id пользователя", example = "1") long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
 
     @Operation(
-            summary = "Создать удобство",
-            description = "Создать удобство"
+            summary = "Создать пользователя",
+            description = "Создать пользователя"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Успешно создано", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = FacilityDTO.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))
             }),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping("/")
-    public ResponseEntity<Facility> createFacility(FacilityDTO facilityDTO) {
-        return ResponseEntity.ok(facilityService.save(facilityDTO));
+    public ResponseEntity<UserDTO> createUser(UserDTO userDTO) {
+        return ResponseEntity.ok(userService.save(userDTO));
     }
 
     @Operation(
-            summary = "Изменить удобство",
-            description = "Изменить удобство по id"
+            summary = "Изменить пользователя",
+            description = "Изменить пользователя по id"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<Facility> updateFacility(
+    public ResponseEntity<UserDTO> updateUser(
             @PathVariable
-            @Parameter(description = "id удобства", example = "10") long id,
-            @RequestBody FacilityDTO facilityDTO) {
-        return ResponseEntity.ok(facilityService.update(id, facilityDTO));
+            @Parameter(description = "id пользователя", example = "1") long id,
+            @RequestBody UserDTO userDTO) {
+        return ResponseEntity.ok(userService.update(id, userDTO));
     }
 
     @DeleteMapping("/{id}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    public ResponseEntity<Facility> deleteFacility(
+    public ResponseEntity<Void> deleteFacility(
             @PathVariable
-            @Parameter(description = "id удобства", example = "10") long id
+            @Parameter(description = "id пользователя", example = "10") long id
     ) {
-        return ResponseEntity.ok(facilityService.deleteById(id));
+        userService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
+
 }
