@@ -28,7 +28,7 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     @Override
     public List<Property> findAll() {
-        return propertyRepository.findAll();
+        return propertyRepository.findAllWithImages();
     }
 
     @Transactional

@@ -17,6 +17,7 @@ services:
     depends_on:
       - postgres
     environment:
+      UPLOAD_PATH: /uploads/
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/rentplace_db
       SPRING_DATASOURCE_USERNAME: kattsyn
       SPRING_DATASOURCE_PASSWORD: katt
