@@ -46,3 +46,18 @@ jobs:
       - name: Test
         working-directory: rentplace
         run: ./gradlew test
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: rentplace
+          push: true
+          tags: |
+            kattsyn/rentplace-backend:latest
+            kattsyn/rentplace-backend:${{ github.sha }}
+          secrets: |
+            "username=${{ secrets.DOCKERHUB_USERNAME }}"
+            "password=${{ secrets.DOCKERHUB_PASSWORD }}"
