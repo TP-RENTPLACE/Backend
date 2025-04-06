@@ -37,7 +37,7 @@ public class FacilityController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadImage(
+    public ResponseEntity<Image> uploadImage(
             @Parameter(
                     description = "Файл фотографии",
                     required = true,
@@ -45,8 +45,8 @@ public class FacilityController {
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
             @Parameter(description = "id категории", example = "10") long id) {
-        facilityService.uploadImage(file, id);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(facilityService.uploadImage(file, id));
     }
 
     @Operation(summary = "Получение всех удобств", description = "Получение всех удобств")

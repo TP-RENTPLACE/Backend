@@ -119,7 +119,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadImage(
+    public ResponseEntity<Image> uploadImage(
             @Parameter(
                     description = "Файл фотографии",
                     required = true,
@@ -127,7 +127,7 @@ public class CategoryController {
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
             @Parameter(description = "id категории", example = "10") long id) {
-        categoryService.uploadImage(file, id);
-        return ResponseEntity.ok().build();
+        Image image = categoryService.uploadImage(file, id);
+        return ResponseEntity.ok(image);
     }
 }

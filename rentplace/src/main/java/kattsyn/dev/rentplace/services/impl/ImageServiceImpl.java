@@ -7,6 +7,7 @@ import kattsyn.dev.rentplace.repositories.ImageRepository;
 import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.StorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +18,11 @@ public class ImageServiceImpl implements ImageService {
 
     private final ImageRepository imageRepository;
     private final StorageService storageService;
+
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
+    @Value("${api.path}")
+    private String apiPath;
 
     private void validateImage(MultipartFile file) {
         String contentType = file.getContentType();
@@ -42,8 +48,14 @@ public class ImageServiceImpl implements ImageService {
         image.setOriginalFileName(file.getOriginalFilename());
         image.setContentType(file.getContentType());
         image.setSize(file.getSize());
+        image.setAdditionalPath("");
+        image.setUrl(generateImageUrl("", filename));
 
         return imageRepository.save(image);
+    }
+
+    private String generateImageUrl(String relativePath, String fileName) {
+        return String.format("%s/%s/images%s%s", baseUrl, apiPath, relativePath, fileName);
     }
 
     @Override
@@ -59,6 +71,7 @@ public class ImageServiceImpl implements ImageService {
             image.setContentType(file.getContentType());
             image.setAdditionalPath(type.additionalPath);
             image.setSize(file.getSize());
+            image.setUrl(generateImageUrl(type.additionalPath, filename));
 
             return imageRepository.save(image);
         } catch (Exception e) {
@@ -80,6 +93,7 @@ public class ImageServiceImpl implements ImageService {
             image.setContentType(file.getContentType());
             image.setAdditionalPath(relativePath);
             image.setSize(file.getSize());
+            image.setUrl(generateImageUrl(relativePath, filename));
 
             return imageRepository.save(image);
         } catch (Exception e) {

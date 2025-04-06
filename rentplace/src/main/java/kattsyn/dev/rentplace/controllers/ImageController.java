@@ -10,24 +10,63 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.services.ImageService;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("${api.path}/images")
-@RequiredArgsConstructor
+@Slf4j
 @Tag(name = "ImageController", description = "Для взаимодействия с фотографиями")
 public class ImageController {
 
     private final ImageService imageService;
+    private final Path rootLocation;
+
+    public ImageController(ImageService imageService, @Value("${upload.path}") String uploadPath) {
+        this.imageService = imageService;
+        this.rootLocation = Paths.get(uploadPath).toAbsolutePath().normalize();
+    }
+
+    @GetMapping("/{entityType}/{entityId}/{filename:.+}")
+    public ResponseEntity<Resource> getImage(
+            @PathVariable String entityType,
+            @PathVariable Long entityId,
+            @PathVariable String filename) {
+
+        Path filePath = rootLocation.resolve(entityType)
+                .resolve(entityId.toString())
+                .resolve(filename)
+                .normalize();
+
+        log.info(filePath.toString());
+
+        try {
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(filePath))
+                        .body(resource);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
     @Operation(
             summary = "Загрузка фотографии",
@@ -49,7 +88,7 @@ public class ImageController {
                     required = true,
                     schema = @Schema(
                             implementation = ImageType.class)
-            ) @RequestParam ImageType imageType) {
+            ) @RequestParam ImageType imageType) { //todo: delete method
         return ResponseEntity.ok(imageService.uploadImage(file, imageType));
     }
 
