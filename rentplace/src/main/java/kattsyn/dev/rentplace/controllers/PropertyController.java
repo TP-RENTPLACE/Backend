@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
-import kattsyn.dev.rentplace.enums.ImageType;
-import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.PropertyService;
-import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +27,6 @@ import java.util.List;
 public class PropertyController {
 
     private final PropertyService propertyService;
-    private final ImageService imageService;
 
     @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
@@ -56,14 +52,6 @@ public class PropertyController {
         return ResponseEntity.ok(savedImages);
     }
 
-    @PostMapping("/{id}/image")
-    public Image uploadPropertyImage(
-            @PathVariable Long id,
-            @RequestParam MultipartFile file) {
-
-        String path = PathResolver.resolvePath(ImageType.PROPERTY, id);
-        return imageService.uploadImage(file, path);
-    }
 
     @Operation(
             summary = "Получение всех объявлений",
