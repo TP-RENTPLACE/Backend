@@ -61,7 +61,7 @@ public class FacilityServiceImpl implements FacilityService {
 
     @Transactional
     @Override
-    public void uploadImage(MultipartFile file, long id) {
+    public Image uploadImage(MultipartFile file, long id) {
         Facility facility = findById(id);
         String path = PathResolver.resolvePath(ImageType.FACILITY, id);
 
@@ -71,5 +71,7 @@ public class FacilityServiceImpl implements FacilityService {
         Image image = imageService.uploadImage(file, path);
         facility.setImage(image);
         facilityRepository.save(facility);
+
+        return image;
     }
 }

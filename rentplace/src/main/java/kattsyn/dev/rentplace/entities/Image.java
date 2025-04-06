@@ -19,6 +19,8 @@ public class Image {
 
     @Column(name = "file_name", length = 400)
     private String fileName;
+    @Column(name = "url", length = 1000)
+    private String url;
     @Column(name = "original_file_name")
     private String originalFileName;
     @Column(name = "content_type")

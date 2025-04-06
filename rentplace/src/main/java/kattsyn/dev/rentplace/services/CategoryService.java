@@ -2,6 +2,7 @@ package kattsyn.dev.rentplace.services;
 
 import kattsyn.dev.rentplace.dtos.CategoryDTO;
 import kattsyn.dev.rentplace.entities.Category;
+import kattsyn.dev.rentplace.entities.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -14,6 +15,6 @@ public interface CategoryService {
     Category update(Long id, CategoryDTO categoryDTO);
     Category deleteById(Long id);
 
-    void uploadImage(MultipartFile file, long id);
+    Image uploadImage(MultipartFile file, long id);
 
 }

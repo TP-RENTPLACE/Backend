@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public void uploadImage(MultipartFile file, long id) {
+    public Image uploadImage(MultipartFile file, long id) {
         Category category = findById(id);
         String path = PathResolver.resolvePath(ImageType.CATEGORY, id);
 
@@ -71,5 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
         Image image = imageService.uploadImage(file, path);
         category.setImage(image);
         categoryRepository.save(category);
+
+        return image;
     }
 }

@@ -14,9 +14,12 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+    open-in-view: false
 api:
   path: api/v1
 upload:
-  path: ./uploads
+  path: C:/Users/Kattsyn/TP-PROJECT/Backend/rentplace/uploads
 storage:
   location: ./uploads/
+app:
+  base-url: http://localhost:8080
