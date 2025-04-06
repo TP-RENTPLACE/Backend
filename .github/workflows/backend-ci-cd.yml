@@ -46,7 +46,6 @@ jobs:
       - name: Test
         working-directory: rentplace
         run: ./gradlew test
-jobs:
   build-and-push-docker-image:
     runs-on: ubuntu-latest
     steps:
