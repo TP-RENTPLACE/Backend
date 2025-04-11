@@ -5,6 +5,7 @@ import kattsyn.dev.rentplace.dtos.CategoryDTO;
 import kattsyn.dev.rentplace.entities.Category;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.enums.ImageType;
+import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.CategoryMapper;
 import kattsyn.dev.rentplace.repositories.CategoryRepository;
 import kattsyn.dev.rentplace.services.CategoryService;
@@ -34,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("Category id: %d not found", id)));
+                .orElseThrow(() -> new NotFoundException(String.format("Category id: %d not found", id)));
     }
 
     @Transactional
