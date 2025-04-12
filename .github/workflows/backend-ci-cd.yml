@@ -61,13 +61,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: rentplace  # Контекст сборки - папка rentplace
-          file: rentplace/Dockerfile  # Явное указание пути к Dockerfile
-          push: true
-          tags: |
-            kattsyn/rentplace-backend:latest
-            kattsyn/rentplace-backend:${{ github.sha }}
+      - name: Build Docker image
+        working-directory: rentplace
+        run: docker build -t ${{ DOCKERHUB_BACKEND_IMAGE_NAME }} -f Dockerfile .
+      - name: Push Docker Image
+        working-directory: rentplace
+        run: docker push ${{ DOCKERHUB_BACKEND_IMAGE_NAME }}
