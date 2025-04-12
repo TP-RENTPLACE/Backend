@@ -52,7 +52,7 @@ jobs:
   build-and-push-docker-image:
     runs-on: ubuntu-latest
     needs: build-and-test  
-    #if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       
@@ -101,5 +101,5 @@ jobs:
           script: |
             cd Deploy
             docker compose down
-            docker pull kattsyn/rentplace-backend:latest
+            docker pull ${{ secrets.DOCKERHUB_BACKEND_IMAGE_NAME }}
             docker compose up -d --build
