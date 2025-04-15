@@ -9,7 +9,13 @@ import java.util.List;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
-    @Query("SELECT p FROM Property p LEFT JOIN FETCH p.images")
-    List<Property> findAllWithImages();
+    @Query("""
+        SELECT DISTINCT p
+        FROM Property p
+        LEFT JOIN FETCH p.categories
+        LEFT JOIN FETCH p.facilities
+        LEFT JOIN FETCH p.images
+    """)
+    List<Property> findAllWithRelations();
 
 }
