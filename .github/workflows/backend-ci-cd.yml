@@ -101,5 +101,6 @@ jobs:
           script: |
             cd Deploy
             docker compose down
+            docker rm $(docker ps -a -q)
             docker pull ${{ secrets.DOCKERHUB_BACKEND_IMAGE_NAME }}
             docker compose up -d --build
