@@ -2,9 +2,10 @@ package kattsyn.dev.rentplace.entities;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -19,6 +20,18 @@ public class Property {
     @Column(name = "property_id", nullable = false)
     private long propertyId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "property_status")
+    @Schema(description = """
+            Статус жилья.
+            PUBLISHED (опубликовано) - объявление доступно всем пользователям.
+            ON MODERATION (на модерации) - объявление на проверке у модерации. Видно только во вкладке "Сдать жилье" у владельца.
+            REJECTED (отклонено) - объявление не прошло модерацию, его нужно отредактировать, чтобы попробовать еще раз отправить на модерацию.
+            NOT PUBLISHED (не опубликовано) - объявление уже проходило модерацию и было опубликовано, но пользователь скрыл его.
+            Если не будет внесено изменений, то можно спокойно публиковать. В случае внесения изменений нужно заново пройти модерацию.
+            """)
+    private PropertyStatus propertyStatus;
+
     @Column(name = "address", nullable = false)
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
@@ -31,9 +44,13 @@ public class Property {
     @Schema(description = "Рейтинг жилья", example = "4.41")
     private float rating;
 
-    @Column(name = "cost_per_day", nullable = false)
-    @Schema(description = "Стоимость жилья в сутки", example = "3500")
-    private int costPerDay;
+    @Column(name = "is_long_term_rent", nullable = false)
+    @Schema(description = "Является ли долгосрочной арендой. True - долгосрочная аренда (месяц и более). False - по дням.")
+    private boolean isLongTermRent;
+
+    @Column(name = "cost", nullable = false)
+    @Schema(description = "Стоимость жилья. Если isLongTermRent true, то цена за месяц, иначе за сутки", example = "3500")
+    private int cost;
 
     @Schema(description = "Сдаваемая площадь", example = "34.2")
     @Column(name = "area")
@@ -55,8 +72,34 @@ public class Property {
     @Column(name = "max_guests")
     private int maxGuests;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "property_id")
-    List<Image> images;
+    @Schema(description = "Владелец жилья")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
+    private User owner;
 
+    @Schema(description = "Фотографии жилья")
+    @OneToMany
+    @JoinTable(name = "properties_images",
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    private Set<Image> images;
+
+    @Schema(description = "Категории жилья")
+    @ManyToMany
+    @JoinTable(
+            name = "properties_categories",
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "properties_facilities",
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "facility_id")
+    )
+    private Set<Facility> facilities;
 }
