@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+//todo: переделать модуль категорий, чтобы выдавать DTO только.
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.path}/categories")
