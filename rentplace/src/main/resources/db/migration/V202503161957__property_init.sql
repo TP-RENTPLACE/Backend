@@ -5,7 +5,6 @@ CREATE TABLE properties
     owner_id          BIGINT       NOT NULL,
     address           VARCHAR(255) NOT NULL,
     description       VARCHAR(2000),
-    rating            FLOAT        NOT NULL,
     is_long_term_rent BOOLEAN      NOT NULL,
     cost              INTEGER      NOT NULL,
     area              FLOAT,

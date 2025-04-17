@@ -40,10 +40,6 @@ public class Property {
     @Schema(description = "Описание имущества", example = "Уютная квартира с видом на водохранилище")
     private String description;
 
-    @Column(name = "rating", nullable = false)
-    @Schema(description = "Рейтинг жилья", example = "4.41")
-    private float rating;
-
     @Column(name = "is_long_term_rent", nullable = false)
     @Schema(description = "Является ли долгосрочной арендой. True - долгосрочная аренда (месяц и более). False - по дням.")
     private boolean isLongTermRent;
