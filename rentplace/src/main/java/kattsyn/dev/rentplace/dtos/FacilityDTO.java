@@ -12,7 +12,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FacilityDTO {
 
+    @Schema(description = "ID удобства", example = "1")
+    private long facilityId;
+
     @Schema(description = "Название удобства", example = "Душ")
     private String name;
+
+    @Schema(description = "Лого удобства")
+    private ImageDTO imageDTO;
 
 }

@@ -1,19 +1,26 @@
 package kattsyn.dev.rentplace.services;
 
+import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.entities.Facility;
-import kattsyn.dev.rentplace.entities.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface FacilityService {
 
-    List<Facility> findAll();
-    Facility findById(Long id);
-    Facility save(FacilityDTO facilityDTODTO);
-    Facility update(Long id, FacilityDTO facilityDTO);
-    Facility deleteById(Long id);
+    List<FacilityDTO> findAll();
 
-    Image uploadImage(MultipartFile file, long id);
+    FacilityDTO findById(Long id);
+
+    Facility getFacilityById(Long id);
+
+    FacilityDTO createWithImage(FacilityCreateEditDTO facilityCreateEditDTO);
+
+    FacilityDTO update(FacilityCreateEditDTO facilityCreateEditDTO, long facilityId);
+
+    FacilityDTO deleteById(Long id);
+
+    ImageDTO uploadImage(MultipartFile file, long id);
 }
