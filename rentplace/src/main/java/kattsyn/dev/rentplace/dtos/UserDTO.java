@@ -30,7 +30,7 @@ public class UserDTO {
     @NotBlank(message = "Фамилия не должна быть пустой")
     @Size(min = 1, max = 100, message = "Фамилия быть от 1 до 100 символов.")
     private String surname;
-    @Schema(description = "Дата рождения пользователя", example = "Пока хз")
+    @Schema(description = "Дата рождения пользователя", example = "2004-02-22")
     private LocalDate birthDate;
     @Schema(description = "email пользователя", example = "ivanivanov@gmail.com")
     @Email
