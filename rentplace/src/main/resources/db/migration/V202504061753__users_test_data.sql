@@ -1,12 +1,10 @@
 INSERT INTO users
-(user_id,
- name,
+(name,
  surname,
  birth_date,
  registration_date,
  email)
-values (1,
-        'Георгий',
+values ('Георгий',
         'Аполлонов',
         '2004-03-21',
         '2024-04-19',
