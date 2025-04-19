@@ -21,7 +21,7 @@ public class UserDTO {
 
     @Schema(description = "ID пользователя", example = "1")
     @Min(value = 1, message = "id должен начинаться с 1")
-    private long id;
+    private long userId;
     @Schema(description = "Имя пользователя", example = "Иван")
     @NotBlank(message = "Имя не должно быть пустым")
     @Size(min = 1, max = 100, message = "Имя должно быть от 1 до 100 символов.")
