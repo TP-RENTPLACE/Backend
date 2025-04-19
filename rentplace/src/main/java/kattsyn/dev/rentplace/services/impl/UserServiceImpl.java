@@ -100,15 +100,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO update(long id, UserCreateEditDTO userCreateEditDTO) {
         User user = getUserById(id);
-        User updatedUser = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
 
-        updatedUser.setUserId(user.getUserId());
+        if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
+            user.setName(userCreateEditDTO.getName());
+        }
+        if (userCreateEditDTO.getSurname() != null && !userCreateEditDTO.getSurname().isBlank()) {
+            user.setSurname(userCreateEditDTO.getSurname());
+        }
+        if (userCreateEditDTO.getEmail() != null && !userCreateEditDTO.getEmail().isBlank()) {
+            user.setEmail(userCreateEditDTO.getEmail());
+        }
+        if (userCreateEditDTO.getBirthDate() != null) {
+            user.setBirthDate(userCreateEditDTO.getBirthDate());
+        }
 
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), user);
         }
 
-        return userMapper.fromUser(userRepository.save(updatedUser));
+        return userMapper.fromUser(userRepository.save(user));
     }
 
     private UserDTO uploadImage(MultipartFile file, User user) {

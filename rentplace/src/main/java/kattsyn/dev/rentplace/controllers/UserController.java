@@ -109,11 +109,11 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PatchMapping("/{id}")
+    @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable
             @Parameter(description = "id пользователя", example = "1") long id,
-            @RequestBody UserCreateEditDTO userCreateEditDTO) {
+            @ModelAttribute UserCreateEditDTO userCreateEditDTO) {
         return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
     }
 
