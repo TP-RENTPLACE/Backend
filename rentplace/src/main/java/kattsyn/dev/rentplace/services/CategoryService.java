@@ -1,20 +1,22 @@
 package kattsyn.dev.rentplace.services;
 
+import kattsyn.dev.rentplace.dtos.CategoryCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.CategoryDTO;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.entities.Category;
-import kattsyn.dev.rentplace.entities.Image;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface CategoryService {
 
-    List<Category> findAll();
-    Category findById(Long id);
-    Category save(CategoryDTO categoryDTO);
-    Category update(Long id, CategoryDTO categoryDTO);
-    Category deleteById(Long id);
+    List<CategoryDTO> findAll();
+    CategoryDTO findById(Long id);
+    CategoryDTO createWithImage(CategoryCreateEditDTO categoryCreateEditDTO);
+    CategoryDTO update(Long id, CategoryCreateEditDTO categoryCreateEditDTO);
+    CategoryDTO deleteById(Long id);
+    Category getCategoryById(Long id);
 
-    Image uploadImage(MultipartFile file, long id);
+    ImageDTO uploadImage(MultipartFile file, long id);
 
 }
