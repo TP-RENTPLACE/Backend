@@ -29,6 +29,9 @@ public class PropertyDTO {
             """)
     private PropertyStatus propertyStatus;
 
+    @Schema(description = "Заголовок объявления", example = "Дом на берегу моря")
+    private String title;
+
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
 
@@ -43,6 +46,9 @@ public class PropertyDTO {
 
     @Schema(description = "Сдаваемая площадь", example = "34.2")
     private float area;
+
+    @Schema(description = "Кол-во комнат", example = "4")
+    private int rooms;
 
     @Schema(description = "Количество спален", example = "4")
     private int bedrooms;

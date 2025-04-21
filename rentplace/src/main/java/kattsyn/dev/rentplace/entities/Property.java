@@ -32,6 +32,9 @@ public class Property {
             """)
     private PropertyStatus propertyStatus;
 
+    @Column(name = "title", nullable = false)
+    private String title;
+
     @Column(name = "address", nullable = false)
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
@@ -52,7 +55,11 @@ public class Property {
     @Column(name = "area")
     private float area;
 
-    @Schema(description = "Количество спален", example = "4")
+    @Schema(description = "Количество комнат", example = "4")
+    @Column(name = "rooms")
+    private int rooms;
+
+    @Schema(description = "Количество спален", example = "3")
     @Column(name = "bedrooms")
     private int bedrooms;
 
