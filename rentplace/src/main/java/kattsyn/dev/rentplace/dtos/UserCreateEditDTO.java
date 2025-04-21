@@ -2,13 +2,13 @@ package kattsyn.dev.rentplace.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -16,12 +16,9 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "DTO Пользователя")
-public class UserDTO {
+@Schema(description = "DTO Пользователя для создания или редактирования")
+public class UserCreateEditDTO {
 
-    @Schema(description = "ID пользователя", example = "1")
-    @Min(value = 1, message = "id должен начинаться с 1")
-    private long userId;
     @Schema(description = "Имя пользователя", example = "Иван")
     @NotBlank(message = "Имя не должно быть пустым")
     @Size(min = 1, max = 100, message = "Имя должно быть от 1 до 100 символов.")
@@ -35,7 +32,7 @@ public class UserDTO {
     @Schema(description = "email пользователя", example = "ivanivanov@gmail.com")
     @Email
     private String email;
-    @Schema(description = "Аватарка пользователя")
-    private ImageDTO imageDTO;
+    @Schema(description = "Аватарка пользователя, файлом")
+    private MultipartFile file;
 
 }

@@ -10,7 +10,13 @@ import lombok.Setter;
 @Setter
 public class CategoryDTO {
 
-    @Schema(description = "Название категории", example = "Кемпинг")
+    @Schema(description = "ID категории", example = "1")
+    private long categoryId;
+
+    @Schema(description = "Название категории", example = "Душ")
     private String name;
+
+    @Schema(description = "Лого категории")
+    private ImageDTO imageDTO;
 
 }

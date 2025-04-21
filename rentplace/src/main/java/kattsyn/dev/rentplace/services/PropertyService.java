@@ -1,19 +1,23 @@
 package kattsyn.dev.rentplace.services;
 
+import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
-import kattsyn.dev.rentplace.entities.Image;
-import kattsyn.dev.rentplace.entities.Property;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface PropertyService {
 
-    List<Property> findAll();
-    Property findById(long id);
-    Property save(PropertyDTO propertyDTO);
-    Property update(long id, PropertyDTO propertyDTO);
-    Property deleteById(long id);
+    List<PropertyDTO> findAll();
 
-    List<Image> uploadImages(MultipartFile[] files, long id);
+    PropertyDTO findById(long id);
+
+    PropertyDTO createWithImages(PropertyCreateEditDTO propertyCreateEditDTO);
+
+    PropertyDTO update(long id, PropertyCreateEditDTO propertyCreateEditDTO);
+
+    void deleteById(long id);
+
+    List<ImageDTO> uploadImages(MultipartFile[] files, long id);
 }

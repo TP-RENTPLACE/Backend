@@ -2,11 +2,12 @@ package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
-import kattsyn.dev.rentplace.mappers.ImageMapper;
+import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.UserMapper;
 import kattsyn.dev.rentplace.repositories.UserRepository;
 import kattsyn.dev.rentplace.services.ImageService;
@@ -26,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ImageService imageService;
-    private final ImageMapper imageMapper;
 
     @Transactional
     @Override
@@ -38,16 +38,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findByEmail(String email) {
         return userMapper.fromUser(userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException(String.format("User with email %s not found", email))
+                () -> new NotFoundException(String.format("User with email %s not found", email))
         ));
     }
 
     @Transactional
     @Override
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("User with id %s not found", id))
+        );
+    }
+
+    @Transactional
+    @Override
     public UserDTO findById(Long id) {
-        return userMapper.fromUser(userRepository.findById(id).orElseThrow(
-                () -> new RuntimeException(String.format("User with id %s not found", id))
-        ));
+        return userMapper.fromUser(getUserById(id));
     }
 
     @Transactional
@@ -57,6 +63,18 @@ public class UserServiceImpl implements UserService {
         user.setRegistrationDate(LocalDate.now());
 
         user = userRepository.save(user);
+        return userMapper.fromUser(user);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO) {
+        User user = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
+        user = userRepository.save(user);
+        if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
+            return uploadImage(userCreateEditDTO.getFile(), user);
+        }
+
         return userMapper.fromUser(user);
     }
 
@@ -76,23 +94,46 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new RuntimeException(String.format("User with id %s not found", id))
         );
-        String path = PathResolver.resolvePath(ImageType.USER, id);
+
+        return uploadImage(file, user).getImageDTO();
+    }
+
+    @Transactional
+    @Override
+    public UserDTO update(long id, UserCreateEditDTO userCreateEditDTO) {
+        User user = getUserById(id);
+
+        if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
+            user.setName(userCreateEditDTO.getName());
+        }
+        if (userCreateEditDTO.getSurname() != null && !userCreateEditDTO.getSurname().isBlank()) {
+            user.setSurname(userCreateEditDTO.getSurname());
+        }
+        if (userCreateEditDTO.getEmail() != null && !userCreateEditDTO.getEmail().isBlank()) {
+            user.setEmail(userCreateEditDTO.getEmail());
+        }
+        if (userCreateEditDTO.getBirthDate() != null) {
+            user.setBirthDate(userCreateEditDTO.getBirthDate());
+        }
+
+        if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
+            return uploadImage(userCreateEditDTO.getFile(), user);
+        }
+
+        return userMapper.fromUser(userRepository.save(user));
+    }
+
+    private UserDTO uploadImage(MultipartFile file, User user) {
+        String path = PathResolver.resolvePath(ImageType.USER, user.getUserId());
 
         if (user.getImage() != null) {
             imageService.deleteImage(user.getImage().getImageId());
         }
         Image image = imageService.uploadImage(file, path);
         user.setImage(image);
-        userRepository.save(user);
 
-        return imageMapper.fromImage(image);
-    }
 
-    @Transactional
-    @Override
-    public UserDTO update(long id, UserDTO userDTO) {
-        User user = userMapper.fromDTO(userDTO);
-        user.setUserId(id);
         return userMapper.fromUser(userRepository.save(user));
     }
+
 }

@@ -1,28 +1,20 @@
-package kattsyn.dev.rentplace.entities;
+package kattsyn.dev.rentplace.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import kattsyn.dev.rentplace.enums.PropertyStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "properties")
-public class Property {
+@Schema(description = "DTO имущества")
+public class PropertyCreateEditDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "property_id", nullable = false)
-    private long propertyId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "property_status")
     @Schema(description = """
             Статус жилья.
             PUBLISHED (опубликовано) - объявление доступно всем пользователям.
@@ -33,77 +25,49 @@ public class Property {
             """)
     private PropertyStatus propertyStatus;
 
-    @Column(name = "title", nullable = false)
+    @Schema(description = "Заголовок объявления", example = "Дом на берегу моря")
     private String title;
 
-    @Column(name = "address", nullable = false)
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
 
-    @Column(name = "description", length = 2000)
     @Schema(description = "Описание имущества", example = "Уютная квартира с видом на водохранилище")
     private String description;
 
-    @Column(name = "is_long_term_rent", nullable = false)
     @Schema(description = "Является ли долгосрочной арендой. True - долгосрочная аренда (месяц и более). False - по дням.")
     private boolean isLongTermRent;
 
-    @Column(name = "cost", nullable = false)
     @Schema(description = "Стоимость жилья. Если isLongTermRent true, то цена за месяц, иначе за сутки", example = "3500")
     private int cost;
 
     @Schema(description = "Сдаваемая площадь", example = "34.2")
-    @Column(name = "area")
     private float area;
 
-    @Schema(description = "Количество комнат", example = "4")
-    @Column(name = "rooms")
+    @Schema(description = "Кол-во комнат", example = "4")
     private int rooms;
 
-    @Schema(description = "Количество спален", example = "3")
-    @Column(name = "bedrooms")
+    @Schema(description = "Количество спален", example = "4")
     private int bedrooms;
 
     @Schema(description = "Количество спальных мест", example = "9")
-    @Column(name = "sleeping_places")
     private int sleepingPlaces;
 
     @Schema(description = "Количество ванных комнат", example = "2")
-    @Column(name = "bathrooms")
     private int bathrooms;
 
     @Schema(description = "Максимум гостей", example = "7")
-    @Column(name = "max_guests")
     private int maxGuests;
 
-    @Schema(description = "Владелец жилья")
-    @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
-    private User owner;
+    @Schema(description = "Владелец жилья", example = "1")
+    private Long ownerId;
 
-    @Schema(description = "Фотографии жилья")
-    @OneToMany
-    @JoinTable(name = "properties_images",
-            joinColumns = @JoinColumn(name = "property_id"),
-            inverseJoinColumns = @JoinColumn(name = "image_id")
-    )
-    private Set<Image> images = new HashSet<>();
+    @Schema(description = "Фотографии объявления, файлами")
+    private MultipartFile[] files;
 
-    @Schema(description = "Категории жилья")
-    @ManyToMany
-    @JoinTable(
-            name = "properties_categories",
-            joinColumns = @JoinColumn(name = "property_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
-    private Set<Category> categories = new HashSet<>();
+    @Schema(description = "Id категорий объявления")
+    private Long[] categoriesIds;
 
+    @Schema(description = "Id удобств объявления")
+    private Long[] facilitiesIds;
 
-    @ManyToMany
-    @JoinTable(
-            name = "properties_facilities",
-            joinColumns = @JoinColumn(name = "property_id"),
-            inverseJoinColumns = @JoinColumn(name = "facility_id")
-    )
-    private Set<Facility> facilities = new HashSet<>();
 }

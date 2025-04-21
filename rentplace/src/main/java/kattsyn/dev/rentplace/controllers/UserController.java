@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -81,8 +83,8 @@ public class UserController {
 
 
     @Operation(
-            summary = "Создать пользователя",
-            description = "Создать пользователя"
+            summary = "Создать пользователя с аватаркой",
+            description = "Создать пользователя с аватаркой"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Успешно создано", content = {
@@ -91,9 +93,9 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PostMapping("/")
-    public ResponseEntity<UserDTO> createUser(UserDTO userDTO) {
-        return ResponseEntity.ok(userService.save(userDTO));
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserDTO> createUser(UserCreateEditDTO userCreateEditDTO) {
+        return new ResponseEntity<>(userService.createWithImage(userCreateEditDTO), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -107,14 +109,18 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PatchMapping("/{id}")
+    @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable
             @Parameter(description = "id пользователя", example = "1") long id,
-            @RequestBody UserDTO userDTO) {
-        return ResponseEntity.ok(userService.update(id, userDTO));
+            @ModelAttribute UserCreateEditDTO userCreateEditDTO) {
+        return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
     }
 
+    @Operation(
+            summary = "Удалить пользователя",
+            description = "Удалить пользователя по ID"
+    )
     @DeleteMapping("/{id}")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
@@ -123,12 +129,12 @@ public class UserController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    public ResponseEntity<Void> deleteFacility(
+    public ResponseEntity<Void> deleteUser(
             @PathVariable
-            @Parameter(description = "id пользователя", example = "10") long id
+            @Parameter(description = "id пользователя", example = "1") long id
     ) {
         userService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

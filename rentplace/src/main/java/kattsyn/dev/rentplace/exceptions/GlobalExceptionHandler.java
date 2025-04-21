@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_ERROR",
-                "Произошла внутренняя ошибка сервера",
+                ex.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

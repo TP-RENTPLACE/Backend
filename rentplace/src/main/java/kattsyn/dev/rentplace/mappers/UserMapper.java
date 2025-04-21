@@ -1,10 +1,8 @@
 package kattsyn.dev.rentplace.mappers;
 
-import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
-import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -19,9 +17,7 @@ public interface UserMapper {
     @Mapping(target = "imageDTO", source = "image")
     UserDTO fromUser(User user);
     List<UserDTO> fromUsers(List<User> users);
+    User fromUserCreateEditDTO(UserCreateEditDTO userCreateEditDTO);
 
-    default ImageDTO fromImage(Image image, @Context ImageMapper imageMapper) {
-        return imageMapper.fromImage(image);
-    }
 
 }
