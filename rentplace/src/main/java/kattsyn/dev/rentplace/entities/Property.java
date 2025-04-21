@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -76,7 +77,7 @@ public class Property {
     private int maxGuests;
 
     @Schema(description = "Владелец жилья")
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
@@ -86,7 +87,7 @@ public class Property {
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id")
     )
-    private Set<Image> images;
+    private Set<Image> images = new HashSet<>();
 
     @Schema(description = "Категории жилья")
     @ManyToMany
@@ -95,7 +96,7 @@ public class Property {
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
 
     @ManyToMany
@@ -104,5 +105,5 @@ public class Property {
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
-    private Set<Facility> facilities;
+    private Set<Facility> facilities = new HashSet<>();
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -57,8 +58,16 @@ public class PropertyCreateEditDTO {
     @Schema(description = "Максимум гостей", example = "7")
     private int maxGuests;
 
-    @Schema(description = "Владелец жилья")
+    @Schema(description = "Владелец жилья", example = "1")
     private Long ownerId;
 
+    @Schema(description = "Фотографии объявления, файлами")
+    private MultipartFile[] files;
+
+    @Schema(description = "Id категорий объявления")
+    private Long[] categoriesIds;
+
+    @Schema(description = "Id удобств объявления")
+    private Long[] facilitiesIds;
 
 }

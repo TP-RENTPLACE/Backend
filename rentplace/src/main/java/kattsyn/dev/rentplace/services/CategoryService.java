@@ -11,11 +11,18 @@ import java.util.List;
 public interface CategoryService {
 
     List<CategoryDTO> findAll();
+
     CategoryDTO findById(Long id);
+
     CategoryDTO createWithImage(CategoryCreateEditDTO categoryCreateEditDTO);
+
     CategoryDTO update(Long id, CategoryCreateEditDTO categoryCreateEditDTO);
+
     CategoryDTO deleteById(Long id);
+
     Category getCategoryById(Long id);
+
+    List<Category> getCategoriesByIds(Long[] ids);
 
     ImageDTO uploadImage(MultipartFile file, long id);
 

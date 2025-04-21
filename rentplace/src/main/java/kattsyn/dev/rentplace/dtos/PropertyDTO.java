@@ -63,15 +63,15 @@ public class PropertyDTO {
     private int maxGuests;
 
     @Schema(description = "Владелец жилья")
-    private UserDTO owner;
+    private UserDTO ownerDTO;
 
     @Schema(description = "Фотографии жилья")
-    private Set<ImageDTO> images;
+    private Set<ImageDTO> imagesDTOs;
 
     @Schema(description = "Категории жилья")
-    private Set<CategoryDTO> categories;
+    private Set<CategoryDTO> categoriesDTOs;
 
     @Schema(description = "Удобства жилья")
-    private Set<FacilityDTO> facilities;
+    private Set<FacilityDTO> facilitiesDTOs;
 
 }

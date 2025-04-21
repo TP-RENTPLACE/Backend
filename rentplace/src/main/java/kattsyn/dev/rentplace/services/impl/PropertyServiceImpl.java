@@ -1,10 +1,13 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
 import kattsyn.dev.rentplace.enums.ImageType;
+import kattsyn.dev.rentplace.mappers.ImageMapper;
 import kattsyn.dev.rentplace.mappers.PropertyMapper;
 import kattsyn.dev.rentplace.repositories.PropertyRepository;
 import kattsyn.dev.rentplace.services.ImageService;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,16 +28,15 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyRepository propertyRepository;
     private final PropertyMapper propertyMapper;
     private final ImageService imageService;
+    private final ImageMapper imageMapper;
 
     @Transactional
     @Override
-    public List<Property> findAll() {
-        return propertyRepository.findAllWithRelations();
+    public List<PropertyDTO> findAll() {
+        return propertyMapper.fromProperties(propertyRepository.findAllWithRelations());
     }
 
-    @Transactional
-    @Override
-    public Property findById(long id) {
+    private Property getPropertyById(Long id) {
         return propertyRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException(String.format("Property not found with id: %d", id))
         );
@@ -41,32 +44,56 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Transactional
     @Override
-    public Property save(PropertyDTO propertyDTO) {
-        return propertyMapper.fromPropertyDto(propertyDTO);
+    public PropertyDTO findById(long id) {
+        return propertyMapper.fromProperty(getPropertyById(id));
+    }
+
+    @Override
+    public PropertyDTO createWithImages(PropertyCreateEditDTO propertyCreateEditDTO) {
+        Property property = propertyMapper.fromPropertyCreateEditDTO(propertyCreateEditDTO);
+        property = propertyRepository.save(property);
+
+        if (propertyCreateEditDTO.getFiles() != null && propertyCreateEditDTO.getFiles().length != 0) {
+            uploadImages(propertyCreateEditDTO.getFiles(), property);
+        }
+
+        return propertyMapper.fromProperty(property);
     }
 
     @Transactional
     @Override
-    public Property update(long id, PropertyDTO propertyDTO) {
-        Property property = propertyMapper.fromPropertyDto(propertyDTO);
-        property.setPropertyId(id);
-        return propertyRepository.save(property);
+    public PropertyDTO update(long id, PropertyCreateEditDTO propertyCreateEditDTO) {
+        Property property = getPropertyById(id);
+
+        Property changedProperty = propertyMapper.fromPropertyCreateEditDTO(propertyCreateEditDTO);
+        changedProperty.setPropertyId(property.getPropertyId());
+
+        if (propertyCreateEditDTO.getFiles() != null && propertyCreateEditDTO.getFiles().length != 0) {
+            property.setImages(new HashSet<>());
+            uploadImages(propertyCreateEditDTO.getFiles(), property);
+        }
+        changedProperty.setImages(property.getImages());
+
+        return propertyMapper.fromProperty(propertyRepository.save(changedProperty));
     }
 
     @Transactional
     @Override
-    public Property deleteById(long id) {
-        Property propertyForDeletion = findById(id);
+    public void deleteById(long id) {
+        Property propertyForDeletion = getPropertyById(id);
         propertyRepository.delete(propertyForDeletion);
-        return propertyForDeletion;
     }
 
     @Transactional
     @Override
-    public List<Image> uploadImages(MultipartFile[] files, long id) {
-        Property property = findById(id);
+    public List<ImageDTO> uploadImages(MultipartFile[] files, long id) {
+        return uploadImages(files, getPropertyById(id));
+    }
 
-        String path = PathResolver.resolvePath(ImageType.PROPERTY, id);
+
+    public List<ImageDTO> uploadImages(MultipartFile[] files, Property property) {
+
+        String path = PathResolver.resolvePath(ImageType.PROPERTY, property.getPropertyId());
         List<Image> savedImages = new ArrayList<>();
 
         for (MultipartFile file : files) {
@@ -74,7 +101,19 @@ public class PropertyServiceImpl implements PropertyService {
             property.getImages().add(image);
             savedImages.add(image);
         }
-        return savedImages;
+        return imageMapper.fromImages(savedImages);
+    }
+
+    public ImageDTO uploadImage(MultipartFile file, Property property) {
+
+        String path = PathResolver.resolvePath(ImageType.PROPERTY, property.getPropertyId());
+        Image savedImage;
+
+        Image image = imageService.uploadImage(file, path);
+        property.getImages().add(image);
+        savedImage = image;
+
+        return imageMapper.fromImage(savedImage);
     }
 
 }

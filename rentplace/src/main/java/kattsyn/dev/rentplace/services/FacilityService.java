@@ -16,6 +16,8 @@ public interface FacilityService {
 
     Facility getFacilityById(Long id);
 
+    List<Facility> getFacilitiesByIds(Long[] ids);
+
     FacilityDTO createWithImage(FacilityCreateEditDTO facilityCreateEditDTO);
 
     FacilityDTO update(FacilityCreateEditDTO facilityCreateEditDTO, long facilityId);
@@ -23,4 +25,5 @@ public interface FacilityService {
     FacilityDTO deleteById(Long id);
 
     ImageDTO uploadImage(MultipartFile file, long id);
+
 }

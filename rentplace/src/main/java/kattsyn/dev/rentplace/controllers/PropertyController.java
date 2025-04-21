@@ -7,9 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
-import kattsyn.dev.rentplace.entities.Image;
-import kattsyn.dev.rentplace.entities.Property;
 import kattsyn.dev.rentplace.services.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,12 +33,12 @@ public class PropertyController {
             summary = "Массовая загрузка фотографий",
             description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 10. Максимальный размер каждого файла - 10MB.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image[].class))),
+            @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageDTO[].class))),
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (превышено кол-во файлов, неверный формат и т.д.)", content = @Content),
             @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<Image>> uploadMultipleImages(
+    public ResponseEntity<List<ImageDTO>> uploadMultipleImages(
             @PathVariable @Parameter(description = "id объявления", example = "10") long id,
             @Parameter(
                     description = "Массив файлов фотографий",
@@ -47,7 +47,7 @@ public class PropertyController {
             ) @RequestPart("files") MultipartFile[] files) {
 
 
-        List<Image> savedImages = propertyService.uploadImages(files, id);
+        List<ImageDTO> savedImages = propertyService.uploadImages(files, id);
 
         return ResponseEntity.ok(savedImages);
     }
@@ -58,12 +58,12 @@ public class PropertyController {
             description = "Позволяет получить все объявления"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Property[].class))),
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/")
-    public ResponseEntity<List<Property>> getProperties() {
-        List<Property> properties = propertyService.findAll();
+    public ResponseEntity<List<PropertyDTO>> getProperties() {
+        List<PropertyDTO> properties = propertyService.findAll();
         return ResponseEntity.ok(properties);
     }
 
@@ -73,7 +73,7 @@ public class PropertyController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Property.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyDTO.class))
             }),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
             @ApiResponse(responseCode = "404", description = "Объявление не найдено", content = @Content),
@@ -81,8 +81,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Property> findById(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
-        Property property = propertyService.findById(id);
+    public ResponseEntity<PropertyDTO> findById(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
+        PropertyDTO property = propertyService.findById(id);
         return ResponseEntity.ok(property);
     }
 
@@ -97,9 +97,9 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PostMapping("/")
-    public ResponseEntity<Property> createProperty(@RequestBody PropertyDTO propertyDTO) {
-        return new ResponseEntity<>(propertyService.save(propertyDTO), HttpStatus.CREATED);
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PropertyDTO> createPropertyWithImage(@ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+        return new ResponseEntity<>(propertyService.createWithImages(propertyCreateEditDTO), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -113,10 +113,10 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PatchMapping("/{id}")
-    public ResponseEntity<Property> updateProperty(@PathVariable @Parameter(description = "id объявления", example = "10") long id,
-                                                   @RequestBody PropertyDTO propertyDTO) {
-        return ResponseEntity.ok(propertyService.update(id, propertyDTO));
+    @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PropertyDTO> updateProperty(@PathVariable @Parameter(description = "id объявления", example = "1") long id,
+                                                   @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+        return ResponseEntity.ok(propertyService.update(id, propertyCreateEditDTO));
     }
 
     @Operation(
@@ -131,7 +131,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Property> deleteProperty(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
-        return new ResponseEntity<>(propertyService.deleteById(id), HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteProperty(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
+        propertyService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,6 +42,18 @@ public class FacilityServiceImpl implements FacilityService {
     public Facility getFacilityById(Long id) {
         return facilityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(String.format("Facility id: %d not found", id)));
+    }
+
+    @Transactional
+    @Override
+    public List<Facility> getFacilitiesByIds(Long[] ids) {
+        List<Facility> facilities = new ArrayList<>();
+
+        for(Long id : ids) {
+            facilities.add(getFacilityById(id));
+        }
+
+        return facilities;
     }
 
     @Transactional

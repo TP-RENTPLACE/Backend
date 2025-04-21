@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,6 +39,18 @@ public class CategoryServiceImpl implements CategoryService {
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Category id: %d not found", id)));
+    }
+
+    @Transactional
+    @Override
+    public List<Category> getCategoriesByIds(Long[] ids) {
+        List<Category> categories = new ArrayList<>();
+
+        for (Long id : ids) {
+            categories.add(getCategoryById(id));
+        }
+
+        return categories;
     }
 
     @Transactional

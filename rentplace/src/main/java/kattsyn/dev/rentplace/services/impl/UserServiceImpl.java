@@ -42,7 +42,9 @@ public class UserServiceImpl implements UserService {
         ));
     }
 
-    private User getUserById(Long id) {
+    @Transactional
+    @Override
+    public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format("User with id %s not found", id))
         );
