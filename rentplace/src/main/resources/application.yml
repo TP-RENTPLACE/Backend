@@ -15,6 +15,11 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+commission:
+  for_renter:
+    in_percent: 3
+  for_owner:
+    in_percent: 3
 api:
   path: api/v1
 upload:
