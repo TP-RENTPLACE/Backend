@@ -46,7 +46,7 @@ public class UserController {
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
-            @Parameter(description = "id категории", example = "10") long id) {
+            @Parameter(description = "id пользователя", example = "10") long id) {
 
         return ResponseEntity.ok(userService.uploadImage(file, id));
     }
