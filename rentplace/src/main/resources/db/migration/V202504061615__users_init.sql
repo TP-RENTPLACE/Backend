@@ -4,6 +4,7 @@ CREATE TABLE users
     image_id          BIGINT,
     name              VARCHAR(255) NOT NULL,
     surname           VARCHAR(255) NOT NULL,
+    gender            VARCHAR(255),
     birth_date        DATE,
     registration_date DATE,
     email             VARCHAR(255) NOT NULL,

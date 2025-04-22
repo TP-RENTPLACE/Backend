@@ -1,6 +1,7 @@
 package kattsyn.dev.rentplace.entities;
 
 import jakarta.persistence.*;
+import kattsyn.dev.rentplace.enums.Gender;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,6 +22,9 @@ public class User {
     private String name;
     @Column(name = "surname")
     private String surname;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
     @Column(name = "birth_date")
     private LocalDate birthDate;
     @Column(name = "registration_date")
