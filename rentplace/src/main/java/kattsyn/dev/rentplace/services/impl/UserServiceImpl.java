@@ -116,6 +116,10 @@ public class UserServiceImpl implements UserService {
             user.setBirthDate(userCreateEditDTO.getBirthDate());
         }
 
+        if (userCreateEditDTO.getGender() != null) {
+            user.setGender(userCreateEditDTO.getGender());
+        }
+
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), user);
         }
