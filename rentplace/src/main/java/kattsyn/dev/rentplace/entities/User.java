@@ -5,6 +5,7 @@ import kattsyn.dev.rentplace.enums.Gender;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -35,4 +36,7 @@ public class User {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "image_id")
     private Image image;
+
+    @OneToMany(mappedBy = "renter")
+    private List<Reservation> reservations;
 }
