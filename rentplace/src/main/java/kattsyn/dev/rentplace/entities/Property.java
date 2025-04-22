@@ -6,6 +6,7 @@ import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -82,7 +83,7 @@ public class Property {
     private User owner;
 
     @Schema(description = "Фотографии жилья")
-    @OneToMany
+    @OneToMany(fetch=FetchType.EAGER)
     @JoinTable(name = "properties_images",
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id")
@@ -90,7 +91,7 @@ public class Property {
     private Set<Image> images = new HashSet<>();
 
     @Schema(description = "Категории жилья")
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "properties_categories",
             joinColumns = @JoinColumn(name = "property_id"),
@@ -99,11 +100,14 @@ public class Property {
     private Set<Category> categories = new HashSet<>();
 
 
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(
             name = "properties_facilities",
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
     private Set<Facility> facilities = new HashSet<>();
+
+    @OneToMany(mappedBy = "property")
+    private List<Reservation> reservations;
 }
