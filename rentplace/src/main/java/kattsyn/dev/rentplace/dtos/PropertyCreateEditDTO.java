@@ -1,6 +1,10 @@
 package kattsyn.dev.rentplace.dtos;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,12 +29,18 @@ public class PropertyCreateEditDTO {
             """)
     private PropertyStatus propertyStatus;
 
+    @NotBlank
+    @Size(min = 1, max = 50)
     @Schema(description = "Заголовок объявления", example = "Дом на берегу моря")
     private String title;
 
+    @NotBlank
+    @Size(min = 1, max = 255)
     @Schema(description = "Адрес имущества", example = "Россия, Воронеж, ул. Новосибирская, д.21")
     private String address;
 
+    @NotBlank
+    @Size(min = 1, max = 2000)
     @Schema(description = "Описание имущества", example = "Уютная квартира с видом на водохранилище")
     private String description;
 
@@ -40,24 +50,31 @@ public class PropertyCreateEditDTO {
     @Schema(description = "Стоимость жилья. Если isLongTermRent true, то цена за месяц, иначе за сутки", example = "3500")
     private int cost;
 
+    @Max(10000)
     @Schema(description = "Сдаваемая площадь", example = "34.2")
     private float area;
 
+    @Max(100)
     @Schema(description = "Кол-во комнат", example = "4")
     private int rooms;
 
+    @Max(100)
     @Schema(description = "Количество спален", example = "4")
     private int bedrooms;
 
+    @Max(200)
     @Schema(description = "Количество спальных мест", example = "9")
     private int sleepingPlaces;
 
+    @Max(100)
     @Schema(description = "Количество ванных комнат", example = "2")
     private int bathrooms;
 
+    @Max(200)
     @Schema(description = "Максимум гостей", example = "7")
     private int maxGuests;
 
+    @NotNull
     @Schema(description = "Владелец жилья", example = "1")
     private Long ownerId;
 
