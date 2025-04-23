@@ -7,17 +7,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.*;
 import kattsyn.dev.rentplace.services.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping("${api.path}/reservations")
 @Tag(name = "Reservation Controller", description = "Взаимодействие с бронированиями")
 public class ReservationController {
@@ -52,7 +55,7 @@ public class ReservationController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDTO> getReservation(@PathVariable
-                                                         @Parameter(description = "id бронирования", example = "1") long id) {
+                                                         @Valid @Parameter(description = "id бронирования", example = "1") long id) {
         ReservationDTO reservationDTO = reservationService.getReservationDTOById(id);
         return ResponseEntity.ok(reservationDTO);
     }
@@ -69,7 +72,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ReservationDTO> createReservation(@ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
+    public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
         return ResponseEntity.ok(reservationService.createReservation(reservationCreateEditDTO));
     }
 
@@ -86,7 +89,7 @@ public class ReservationController {
     })
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> updateReservation(@PathVariable @Parameter(description = "id бронирования для изменения") long id,
-                                                            @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
+                                                            @Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
         return ResponseEntity.ok(reservationService.updateReservation(id, reservationCreateEditDTO));
     }
 
@@ -102,7 +105,7 @@ public class ReservationController {
     })
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable
-            @Parameter(description = "id бронирования", example = "1") long id
+            @Valid @Parameter(description = "id бронирования", example = "1") long id
     ) {
         return ResponseEntity.ok(reservationService.deleteById(id));
     }

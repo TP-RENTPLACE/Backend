@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.CategoryCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.CategoryDTO;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
@@ -15,6 +16,7 @@ import kattsyn.dev.rentplace.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.path}/categories")
+@Validated
 @Tag(name = "CategoryController", description = "Для взаимодействия с категориями")
 public class CategoryController {
 
@@ -56,7 +59,7 @@ public class CategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> findById(
             @PathVariable
-            @Parameter(description = "id категории", example = "10") long id) {
+            @Valid @Parameter(description = "id категории", example = "1") long id) {
         CategoryDTO category = categoryService.findById(id);
         return ResponseEntity.ok(category);
     }
@@ -73,7 +76,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CategoryDTO> createCategory(@ModelAttribute CategoryCreateEditDTO categoryCreateEditDTO) {
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @ModelAttribute CategoryCreateEditDTO categoryCreateEditDTO) {
         return ResponseEntity.ok(categoryService.createWithImage(categoryCreateEditDTO));
     }
 
@@ -92,7 +95,7 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> updateCategory(
             @PathVariable
             @Parameter(description = "id категории", example = "10") long id,
-            @ModelAttribute CategoryCreateEditDTO categoryCreateEditDTO) {
+            @Valid @ModelAttribute CategoryCreateEditDTO categoryCreateEditDTO) {
         return ResponseEntity.ok(categoryService.update(id, categoryCreateEditDTO));
     }
 
@@ -106,7 +109,7 @@ public class CategoryController {
     })
     public ResponseEntity<CategoryDTO> deleteCategory(
             @PathVariable
-            @Parameter(description = "id категории", example = "1") long id
+            @Valid @Parameter(description = "id категории", example = "1") long id
     ) {
         return ResponseEntity.ok(categoryService.deleteById(id));
     }
@@ -127,7 +130,7 @@ public class CategoryController {
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
-            @Parameter(description = "id категории", example = "10") long id) {
+            @Valid @Parameter(description = "id категории", example = "1") long id) {
         ImageDTO image = categoryService.uploadImage(file, id);
         return ResponseEntity.ok(image);
     }
