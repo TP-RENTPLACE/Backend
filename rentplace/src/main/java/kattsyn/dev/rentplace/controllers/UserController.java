@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
@@ -77,7 +78,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(
             @PathVariable
-            @Parameter(description = "id пользователя", example = "1") long id) {
+            @Valid @Parameter(description = "id пользователя", example = "1") long id) {
         return ResponseEntity.ok(userService.findById(id));
     }
 
@@ -94,7 +95,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserDTO> createUser(UserCreateEditDTO userCreateEditDTO) {
+    public ResponseEntity<UserDTO> createUser(@ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO) {
         return new ResponseEntity<>(userService.createWithImage(userCreateEditDTO), HttpStatus.CREATED);
     }
 
@@ -113,7 +114,7 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable
             @Parameter(description = "id пользователя", example = "1") long id,
-            @ModelAttribute UserCreateEditDTO userCreateEditDTO) {
+            @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO) {
         return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
     }
 
@@ -131,7 +132,7 @@ public class UserController {
     })
     public ResponseEntity<Void> deleteUser(
             @PathVariable
-            @Parameter(description = "id пользователя", example = "1") long id
+            @Valid @Parameter(description = "id пользователя", example = "1") long id
     ) {
         userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

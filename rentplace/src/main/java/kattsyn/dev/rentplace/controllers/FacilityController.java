@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +27,7 @@ import java.util.List;
 @RequestMapping("${api.path}/facilities")
 @RestController
 @RequiredArgsConstructor
+@Validated
 @Tag(name = "FacilityController", description = "Для взаимодействия с удобствами")
 public class FacilityController {
 
@@ -46,7 +49,7 @@ public class FacilityController {
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
-            @Parameter(description = "id категории", example = "1") long id) {
+            @Valid @Parameter(description = "id категории", example = "1") long id) {
 
         return ResponseEntity.ok(facilityService.uploadImage(file, id));
     }
@@ -77,7 +80,7 @@ public class FacilityController {
     @GetMapping("/{id}")
     public ResponseEntity<FacilityDTO> findById(
             @PathVariable
-            @Parameter(description = "id удобства", example = "2") long id) {
+            @Valid @Parameter(description = "id удобства", example = "2") long id) {
         return ResponseEntity.ok(facilityService.findById(id));
     }
 
@@ -95,7 +98,7 @@ public class FacilityController {
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FacilityDTO> createFacilityWithImage
-            (@ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO) {
+            (@Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO) {
         return ResponseEntity.ok(facilityService.createWithImage(facilityCreateEditDTO));
     }
 
@@ -112,8 +115,8 @@ public class FacilityController {
     })
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FacilityDTO> updateFacility(
-            @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO,
-            @PathVariable long id) {
+            @Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO,
+            @Valid @PathVariable long id) {
         return ResponseEntity.ok(facilityService.update(facilityCreateEditDTO, id));
     }
 
@@ -128,7 +131,7 @@ public class FacilityController {
     })
     public ResponseEntity<FacilityDTO> deleteFacility(
             @PathVariable
-            @Parameter(description = "id удобства", example = "10") long id
+            @Valid @Parameter(description = "id удобства", example = "1") long id
     ) {
         return ResponseEntity.ok(facilityService.deleteById(id));
     }

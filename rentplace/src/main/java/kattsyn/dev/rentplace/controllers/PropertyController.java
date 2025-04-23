@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@Validated
 @RequestMapping("${api.path}/properties")
 @Tag(name = "Property Controller", description = "Взаимодействие с имуществом")
 public class PropertyController {
@@ -81,7 +84,7 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<PropertyDTO> findById(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
+    public ResponseEntity<PropertyDTO> findById(@Valid @PathVariable @Parameter(description = "id объявления", example = "10") long id) {
         PropertyDTO property = propertyService.findById(id);
         return ResponseEntity.ok(property);
     }
@@ -98,7 +101,7 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PropertyDTO> createPropertyWithImage(@ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+    public ResponseEntity<PropertyDTO> createPropertyWithImage(@Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
         return new ResponseEntity<>(propertyService.createWithImages(propertyCreateEditDTO), HttpStatus.CREATED);
     }
 
@@ -114,8 +117,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PropertyDTO> updateProperty(@PathVariable @Parameter(description = "id объявления", example = "1") long id,
-                                                   @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+    public ResponseEntity<PropertyDTO> updateProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "1") long id,
+                                                      @Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
         return ResponseEntity.ok(propertyService.update(id, propertyCreateEditDTO));
     }
 
@@ -131,7 +134,7 @@ public class PropertyController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProperty(@PathVariable @Parameter(description = "id объявления", example = "10") long id) {
+    public ResponseEntity<Void> deleteProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "10") long id) {
         propertyService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
