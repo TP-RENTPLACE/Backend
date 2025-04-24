@@ -36,7 +36,9 @@ public class PropertyServiceImpl implements PropertyService {
         return propertyMapper.fromProperties(propertyRepository.findAllWithRelations());
     }
 
-    private Property getPropertyById(Long id) {
+    @Override
+    @Transactional
+    public Property getPropertyById(long id) {
         return propertyRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException(String.format("Property not found with id: %d", id))
         );
@@ -47,6 +49,7 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertyDTO findById(long id) {
         return propertyMapper.fromProperty(getPropertyById(id));
     }
+
 
     @Override
     public PropertyDTO createWithImages(PropertyCreateEditDTO propertyCreateEditDTO) {
