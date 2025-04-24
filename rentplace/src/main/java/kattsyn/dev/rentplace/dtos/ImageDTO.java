@@ -13,6 +13,8 @@ import lombok.Setter;
 @Schema(description = "DTO Картинки")
 public class ImageDTO {
 
+    @Schema(description = "ID Фотографии")
+    private long imageId;
     @Schema(description = "URL фотографии")
     private String url;
     @Schema(description = "Является ли картинка превью (для объявлений)")
