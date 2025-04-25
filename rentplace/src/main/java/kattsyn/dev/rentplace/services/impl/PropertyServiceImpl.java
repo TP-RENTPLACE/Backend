@@ -60,7 +60,7 @@ public class PropertyServiceImpl implements PropertyService {
             uploadImages(propertyCreateEditDTO.getFiles(), property);
         }
 
-        return propertyMapper.fromProperty(property);
+        return propertyMapper.fromProperty(propertyRepository.save(property));
     }
 
     @Transactional
