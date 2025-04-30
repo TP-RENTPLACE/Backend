@@ -7,6 +7,6 @@ CREATE TABLE users
     gender            VARCHAR(255),
     birth_date        DATE,
     registration_date DATE,
-    email             VARCHAR(255) NOT NULL,
+    email             VARCHAR(255) NOT NULL UNIQUE ,
     FOREIGN KEY (image_id) REFERENCES images (image_id) ON DELETE SET NULL
 );
