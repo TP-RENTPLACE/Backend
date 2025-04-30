@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.*;
@@ -35,6 +36,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservationDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/")
     public ResponseEntity<List<ReservationDTO>> getReservations() {
         List<ReservationDTO> reservationDTOS = reservationService.findAllReservations();
@@ -53,6 +55,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDTO> getReservation(@PathVariable
                                                          @Valid @Parameter(description = "id бронирования", example = "1") long id) {
@@ -71,6 +74,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
         return ResponseEntity.ok(reservationService.createReservation(reservationCreateEditDTO));
@@ -87,6 +91,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> updateReservation(@PathVariable @Parameter(description = "id бронирования для изменения") long id,
                                                             @Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
@@ -103,6 +108,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable
             @Valid @Parameter(description = "id бронирования", example = "1") long id

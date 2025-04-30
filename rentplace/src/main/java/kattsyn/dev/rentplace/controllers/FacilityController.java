@@ -31,6 +31,8 @@ import java.util.List;
 @Tag(name = "FacilityController", description = "Для взаимодействия с удобствами")
 public class FacilityController {
 
+    //todo: добавить всем методам @SecurityRequirement(name = "JWT"), а каким-то @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
     private final FacilityService facilityService;
 
     @Operation(
