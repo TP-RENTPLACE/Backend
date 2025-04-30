@@ -1,5 +1,6 @@
 package kattsyn.dev.rentplace.exceptions;
 
+import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import kattsyn.dev.rentplace.dtos.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,17 @@ public class GlobalExceptionHandler {
                 request.getDescription(false).replace("uri=", "")
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(AuthException ex, WebRequest request) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "AUTHENTICATION_FAILED",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)
