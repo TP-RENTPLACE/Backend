@@ -20,6 +20,15 @@ commission:
     in_percent: 3
   for_owner:
     in_percent: 3
+jwt:
+  expiration_time_in_minutes:
+    access: 5
+  expiration_time_in_days:
+    refresh: 30
+  secret:
+    access: IJKTakIvc2HS2/MDqMWjfFMobX13mzQWlIi5rr2fTGNNlbWkDyuGi+FJO0b82kiERAF1k05iFdymIwxtRb4vcA==
+    refresh: +fTEQwJivdxcqp/FIAi6N26GWs31utu+AJ/TU6i4zINYCTCVJnIunKzOmXNCMcZgCZ74Pqi0DUBQ4vf8O5V+HA==
+
 api:
   path: api/v1
 upload:
