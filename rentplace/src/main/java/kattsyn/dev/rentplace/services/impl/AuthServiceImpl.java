@@ -10,6 +10,7 @@ import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.auth.JwtProvider;
+import kattsyn.dev.rentplace.services.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,11 +30,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final Map<String, String> refreshStorage = new HashMap<>();
     private final JwtProvider jwtProvider;
+    private final VerificationCodeService verificationCodeService;
 
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
         //todo: заменить на сгенерированный код
-        if (123456 == Integer.parseInt(authRequest.getCode())) {
+
+        if (verificationCodeService.validateCode(authRequest.getEmail(), authRequest.getCode())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);
             refreshStorage.put(user.getEmail(), refreshToken);
