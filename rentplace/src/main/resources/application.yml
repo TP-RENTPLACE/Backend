@@ -15,11 +15,38 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+          ssl:
+            enable: false
+            #trust: smtp.gmail.com
+logging:
+  level:
+    org.springframework.mail: DEBUG
+    com.sun.mail: DEBUG
 commission:
   for_renter:
     in_percent: 3
   for_owner:
     in_percent: 3
+jwt:
+  expiration_time_in_minutes:
+    access: 5
+  expiration_time_in_days:
+    refresh: 30
+  secret:
+    access: IJKTakIvc2HS2/MDqMWjfFMobX13mzQWlIi5rr2fTGNNlbWkDyuGi+FJO0b82kiERAF1k05iFdymIwxtRb4vcA==
+    refresh: +fTEQwJivdxcqp/FIAi6N26GWs31utu+AJ/TU6i4zINYCTCVJnIunKzOmXNCMcZgCZ74Pqi0DUBQ4vf8O5V+HA==
+
 api:
   path: api/v1
 upload:

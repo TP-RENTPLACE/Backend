@@ -2,6 +2,7 @@ package kattsyn.dev.rentplace.entities;
 
 import jakarta.persistence.*;
 import kattsyn.dev.rentplace.enums.Gender;
+import kattsyn.dev.rentplace.enums.Role;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 @Table(name = "users")
 public class User {
 
@@ -32,6 +34,10 @@ public class User {
     private LocalDate registrationDate;
     @Column(name = "email")
     private String email;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "image_id")

@@ -25,12 +25,19 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	//implementation 'org.springframework.boot:spring-boot-starter-security'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
 	implementation 'org.flywaydb:flyway-core:11.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation 'org.flywaydb:flyway-core'
+
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.4.3")
+
+	implementation("org.springframework.security:spring-security-core:6.4.4")
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -44,7 +51,7 @@ dependencies {
 	implementation("org.hibernate.validator:hibernate-validator:8.0.0.Final")
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	//testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testRuntimeOnly 'com.h2database:h2'

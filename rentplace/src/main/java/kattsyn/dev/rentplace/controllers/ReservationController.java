@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.*;
@@ -13,6 +14,7 @@ import kattsyn.dev.rentplace.services.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +55,8 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDTO> getReservation(@PathVariable
                                                          @Valid @Parameter(description = "id бронирования", example = "1") long id) {
@@ -71,6 +75,9 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
         return ResponseEntity.ok(reservationService.createReservation(reservationCreateEditDTO));
@@ -87,6 +94,9 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> updateReservation(@PathVariable @Parameter(description = "id бронирования для изменения") long id,
                                                             @Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
@@ -103,6 +113,9 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable
             @Valid @Parameter(description = "id бронирования", example = "1") long id

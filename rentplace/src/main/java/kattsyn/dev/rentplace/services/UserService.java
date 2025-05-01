@@ -4,6 +4,7 @@ import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface UserService {
 
     List<UserDTO> findAll();
-    UserDTO findByEmail(String email);
+    User getUserByEmail(String email);
     UserDTO findById(Long id);
     User getUserById(Long id);
     UserDTO save(UserDTO userDTO);

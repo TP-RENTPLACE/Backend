@@ -14,6 +14,8 @@ import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,10 +38,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO findByEmail(String email) {
-        return userMapper.fromUser(userRepository.findByEmail(email).orElseThrow(
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User with email %s not found", email))
-        ));
+        );
     }
 
     @Transactional

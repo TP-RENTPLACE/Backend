@@ -69,6 +69,9 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationMapper.fromReservation(reservation);
     }
 
+    /*
+    Поменять метод, чтобы нельзя было иметь отрицательный период бронирования (если разные года аренды)
+     */
     private int countRentPrice(Reservation reservation) {
         int period;
         if (reservation.isLongTermRent()) {

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.enums.ImageType;
@@ -17,6 +18,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,6 +78,8 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Image> uploadImage(
             @Parameter(
@@ -104,6 +108,8 @@ public class ImageController {
             @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<Image>> uploadMultipleImages(@Parameter(
             description = "Массив файлов фотографий",
             required = true,
@@ -157,6 +163,8 @@ public class ImageController {
                             description = "Фото не найдено")
             }
     )
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteImage(
             @Parameter(description = "ID фотографии", required = true, example = "1")
             @PathVariable Long id) {

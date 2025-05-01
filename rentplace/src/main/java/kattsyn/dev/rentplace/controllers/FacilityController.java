@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +33,8 @@ import java.util.List;
 @Tag(name = "FacilityController", description = "Для взаимодействия с удобствами")
 public class FacilityController {
 
+    //todo: добавить всем методам @SecurityRequirement(name = "JWT"), а каким-то @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
     private final FacilityService facilityService;
 
     @Operation(
@@ -41,6 +45,8 @@ public class FacilityController {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageDTO.class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ImageDTO> uploadImage(
             @Parameter(
@@ -96,6 +102,8 @@ public class FacilityController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FacilityDTO> createFacilityWithImage
             (@Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO) {
@@ -113,6 +121,8 @@ public class FacilityController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FacilityDTO> updateFacility(
             @Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO,
@@ -129,6 +139,8 @@ public class FacilityController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<FacilityDTO> deleteFacility(
             @PathVariable
             @Valid @Parameter(description = "id удобства", example = "1") long id
