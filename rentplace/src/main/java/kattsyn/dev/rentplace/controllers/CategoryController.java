@@ -77,6 +77,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @SecurityRequirement(name = "JWT")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoryDTO> createCategory(@Valid @ModelAttribute CategoryCreateEditDTO categoryCreateEditDTO) {

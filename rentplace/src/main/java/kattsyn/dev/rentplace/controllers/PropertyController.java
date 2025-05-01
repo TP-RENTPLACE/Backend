@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
     public ResponseEntity<List<ImageDTO>> uploadMultipleImages(
             @PathVariable @Parameter(description = "id объявления", example = "10") long id,
             @Parameter(
@@ -100,6 +104,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PropertyDTO> createPropertyWithImage(@Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
         return new ResponseEntity<>(propertyService.createWithImages(propertyCreateEditDTO), HttpStatus.CREATED);
@@ -116,6 +122,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PropertyDTO> updateProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "1") long id,
                                                       @Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
@@ -133,6 +141,8 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')" )
+    @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "10") long id) {
         propertyService.deleteById(id);
