@@ -36,9 +36,7 @@ public class SecurityConfig {
     @PostConstruct
     public void init() {
         PUBLIC_URLS = new String[]{
-                "/" + apiPath + "/auth/register",
-                "/" + apiPath + "/auth/code-request",
-                "/" + apiPath + "/auth/login",
+                "/" + apiPath + "/auth/**",
                 "/swagger-ui/**",
                 "/v3/api-docs/**"
         };
