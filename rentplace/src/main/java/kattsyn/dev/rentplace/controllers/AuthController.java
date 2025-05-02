@@ -48,8 +48,8 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
                 .httpOnly(true)
-                .secure(true) // обязательно для SameSite=None
-                .sameSite("None") // <== вот это ключевое
+                .secure(false) // на прод вернуть true
+                .sameSite("Lax") // вернуть None
                 .path("/")
                 .maxAge(Duration.ofDays(30)) // чтобы не исчезала
                 .build();
@@ -102,8 +102,8 @@ public class AuthController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", jwtResponse.getRefreshToken())
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(false) // на прод вернуть true
+                .sameSite("Lax") // вернуть None
                 .path("/")
                 .maxAge(Duration.ofDays(30))
                 .build();
