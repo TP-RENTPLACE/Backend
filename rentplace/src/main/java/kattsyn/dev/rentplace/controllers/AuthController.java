@@ -3,6 +3,8 @@ package kattsyn.dev.rentplace.controllers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import kattsyn.dev.rentplace.dtos.CodeRequest;
 import kattsyn.dev.rentplace.dtos.JwtRequest;
 import kattsyn.dev.rentplace.dtos.JwtResponse;
@@ -11,10 +13,7 @@ import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.path}/auth")
@@ -40,9 +39,21 @@ public class AuthController {
             description = "Получает email и код с почты. Возвращает JWT токены"
     )
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) throws AuthException {
-        final JwtResponse token = authService.login(authRequest);
-        return ResponseEntity.ok(token);
+    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest,
+                                             HttpServletResponse response) throws AuthException {
+        JwtResponse tokens = authService.login(authRequest);
+
+        // Настройка cookie для refresh token
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokens.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true); // Для HTTPS
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(30 * 24 * 60 * 60); // 30 дней
+
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok()
+                .body(new JwtResponse(tokens.getAccessToken(), null));
     }
 
     @Operation(
@@ -60,9 +71,18 @@ public class AuthController {
             description = "Принимает еще не истекший RefreshToken и возвращает новый, продленный."
     )
     @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody RefreshJwtRequest request) throws AuthException {
-        final JwtResponse token = authService.refresh(request.getRefreshToken());
-        return ResponseEntity.ok(token);
+    public ResponseEntity<JwtResponse> refresh(@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) throws AuthException {
+        JwtResponse jwtResponse = authService.refresh(refreshToken);
+
+        Cookie refreshCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(30 * 24 * 60 * 60);
+        response.addCookie(refreshCookie);
+
+        return ResponseEntity.ok()
+                .body(new JwtResponse(jwtResponse.getAccessToken(), null));
     }
 
 }
