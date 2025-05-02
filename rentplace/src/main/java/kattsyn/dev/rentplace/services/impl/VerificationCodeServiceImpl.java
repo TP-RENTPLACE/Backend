@@ -46,6 +46,6 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
 
     @Override
     public String generateCode() {
-        return String.format("%06d", new Random().nextInt(999999));
+        return String.format("%05d", new Random().nextInt(99999));
     }
 }
