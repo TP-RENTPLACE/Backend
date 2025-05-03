@@ -10,6 +10,10 @@ import java.util.List;
 
 public interface PropertyService {
 
+    boolean ownsPropertyOrAdmin(long propertyId, String email);
+
+    boolean allowedToCreatePropertyOrAdmin(PropertyCreateEditDTO propertyCreateEditDTO, String email);
+
     List<PropertyDTO> findAll();
 
     PropertyDTO findById(long id);

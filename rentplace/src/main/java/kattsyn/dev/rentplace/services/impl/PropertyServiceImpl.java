@@ -6,12 +6,17 @@ import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
+import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
+import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.exceptions.ForbiddenException;
+import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.ImageMapper;
 import kattsyn.dev.rentplace.mappers.PropertyMapper;
 import kattsyn.dev.rentplace.repositories.PropertyRepository;
 import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.PropertyService;
+import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +34,29 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyMapper propertyMapper;
     private final ImageService imageService;
     private final ImageMapper imageMapper;
+    private final UserService userService;
+
+    @Override
+    @Transactional
+    public boolean ownsPropertyOrAdmin(long propertyId, String email) {
+        User user = userService.getUserByEmail(email);
+        Property property = getPropertyById(propertyId);
+
+        if (user.getRole() == Role.ROLE_ADMIN || property.getOwner().getUserId() == user.getUserId()) {
+            return true;
+        }
+        throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to edit or delete property id: %s.", propertyId));
+    }
+
+    @Override
+    public boolean allowedToCreatePropertyOrAdmin(PropertyCreateEditDTO propertyCreateEditDTO, String email) {
+        User user = userService.getUserByEmail(email);
+
+        if (user.getRole() == Role.ROLE_ADMIN || user.getUserId() == propertyCreateEditDTO.getOwnerId()) {
+            return true;
+        }
+        throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to create property for user email: %s.", email));
+    }
 
     @Transactional
     @Override
@@ -40,7 +68,7 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     public Property getPropertyById(long id) {
         return propertyRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException(String.format("Property not found with id: %d", id))
+                () -> new NotFoundException(String.format("Property not found with id: %d", id))
         );
     }
 

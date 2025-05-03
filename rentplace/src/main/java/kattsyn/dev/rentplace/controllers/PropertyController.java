@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +44,7 @@ public class PropertyController {
             @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<List<ImageDTO>> uploadMultipleImages(
             @PathVariable @Parameter(description = "id объявления", example = "10") long id,
@@ -51,9 +52,10 @@ public class PropertyController {
                     description = "Массив файлов фотографий",
                     required = true,
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(type = "string", format = "binary"))
-            ) @RequestPart("files") MultipartFile[] files) {
+            ) @RequestPart("files") MultipartFile[] files,
+            Authentication authentication) {
 
-
+        propertyService.ownsPropertyOrAdmin(id, authentication.getName());
         List<ImageDTO> savedImages = propertyService.uploadImages(files, id);
 
         return ResponseEntity.ok(savedImages);
@@ -104,10 +106,11 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<PropertyDTO> createPropertyWithImage(@Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+    public ResponseEntity<PropertyDTO> createPropertyWithImage(@Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO, Authentication authentication) {
+        propertyService.allowedToCreatePropertyOrAdmin(propertyCreateEditDTO, authentication.getName());
         return new ResponseEntity<>(propertyService.createWithImages(propertyCreateEditDTO), HttpStatus.CREATED);
     }
 
@@ -122,11 +125,13 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PropertyDTO> updateProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "1") long id,
-                                                      @Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO) {
+                                                      @Valid @ModelAttribute PropertyCreateEditDTO propertyCreateEditDTO,
+                                                      Authentication authentication) {
+        propertyService.ownsPropertyOrAdmin(id, authentication.getName());
         return ResponseEntity.ok(propertyService.update(id, propertyCreateEditDTO));
     }
 
@@ -141,11 +146,13 @@ public class PropertyController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
     @SecurityRequirement(name = "JWT")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "10") long id) {
-        propertyService.deleteById(id);
+    public ResponseEntity<Void> deleteProperty(@Valid @PathVariable @Parameter(description = "id объявления", example = "10") long id, Authentication authentication) {
+        if (propertyService.ownsPropertyOrAdmin(id, authentication.getName())) {
+            propertyService.deleteById(id);
+        }
         return ResponseEntity.noContent().build();
     }
 }
