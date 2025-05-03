@@ -6,7 +6,6 @@ import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.*;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -78,7 +77,7 @@ public class Property {
     private int maxGuests;
 
     @Schema(description = "Владелец жилья")
-    @OneToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", referencedColumnName = "user_id")
     private User owner;
 
@@ -108,6 +107,4 @@ public class Property {
     )
     private Set<Facility> facilities = new HashSet<>();
 
-    @OneToMany(mappedBy = "property")
-    private List<Reservation> reservations;
 }
