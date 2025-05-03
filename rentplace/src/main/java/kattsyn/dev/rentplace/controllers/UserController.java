@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,8 +52,9 @@ public class UserController {
                     content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
             ) @RequestParam("file") MultipartFile file,
             @PathVariable
-            @Parameter(description = "id пользователя", example = "10") long id) {
-
+            @Parameter(description = "id пользователя", example = "10") long id,
+            Authentication authentication) {
+        userService.allowedToEditUser(id, authentication.getName());
         return ResponseEntity.ok(userService.uploadImage(file, id));
     }
 
@@ -122,7 +124,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable
             @Parameter(description = "id пользователя", example = "1") long id,
-            @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO) {
+            @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,
+            Authentication authentication) {
+        userService.allowedToEditUser(id, authentication.getName());
         return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
     }
 
