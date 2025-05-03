@@ -6,6 +6,7 @@ import jakarta.security.auth.message.AuthException;
 import kattsyn.dev.rentplace.auth.JwtAuthentication;
 import kattsyn.dev.rentplace.dtos.JwtRequest;
 import kattsyn.dev.rentplace.dtos.JwtResponse;
+import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.UserService;
@@ -13,6 +14,7 @@ import kattsyn.dev.rentplace.auth.JwtProvider;
 import kattsyn.dev.rentplace.services.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
 
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
-        //todo: заменить на сгенерированный код
 
         if (verificationCodeService.validateCode(authRequest.getEmail(), authRequest.getCode())) {
             final String accessToken = jwtProvider.generateAccessToken(user);
@@ -74,6 +75,16 @@ public class AuthServiceImpl implements AuthService {
             }
         }
         throw new AuthException("Невалидный JWT токен");
+    }
+
+    public UserDTO getUserInfo() throws AuthException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() ||
+                "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AuthException("Пользователь не авторизован");
+        }
+        String email = authentication.getName();
+        return userService.getUserDTOByEmail(email);
     }
 
     public JwtAuthentication getAuthInfo() {

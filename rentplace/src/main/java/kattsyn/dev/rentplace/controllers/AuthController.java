@@ -1,22 +1,15 @@
 package kattsyn.dev.rentplace.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
-import jakarta.servlet.http.HttpServletResponse;
-import kattsyn.dev.rentplace.dtos.CodeRequest;
-import kattsyn.dev.rentplace.dtos.JwtRequest;
-import kattsyn.dev.rentplace.dtos.JwtResponse;
-import kattsyn.dev.rentplace.dtos.RefreshJwtRequest;
+import kattsyn.dev.rentplace.dtos.*;
 import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Duration;
 
 @RestController
 @RequestMapping("${api.path}/auth")
@@ -116,6 +109,14 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .body(jwtResponse);
+    }
+
+
+    @GetMapping("/info")
+    @SecurityRequirement(name = "JWT")
+    @Operation(summary = "Получение информации о пользователе", description = "Возвращает информацию об авторизованном пользователе")
+    public UserDTO getUserInfo() throws AuthException {
+        return authService.getUserInfo();
     }
 
 }
