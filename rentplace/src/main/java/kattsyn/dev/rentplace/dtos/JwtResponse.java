@@ -15,7 +15,7 @@ public class JwtResponse {
     private final String type = "Bearer ";
     private String accessToken;
 
-    @JsonIgnore
+    //@JsonIgnore
     private String refreshToken;
 
 }
