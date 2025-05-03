@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,7 +80,9 @@ public class ReservationController {
     @SecurityRequirement(name = "JWT")
     @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
+    public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO,
+                                                            Authentication authentication) {
+        reservationService.allowedToCreateReservationOrAdmin(reservationCreateEditDTO, authentication.getName());
         return ResponseEntity.ok(reservationService.createReservation(reservationCreateEditDTO));
     }
 
@@ -118,8 +121,10 @@ public class ReservationController {
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable
-            @Valid @Parameter(description = "id бронирования", example = "1") long id
+            @Valid @Parameter(description = "id бронирования", example = "1") long id,
+            Authentication authentication
     ) {
+        reservationService.ownsReservationOrAdmin(id, authentication.getName());
         return ResponseEntity.ok(reservationService.deleteById(id));
     }
 

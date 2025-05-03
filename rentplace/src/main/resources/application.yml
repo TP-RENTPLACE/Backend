@@ -35,9 +35,9 @@ logging:
     com.sun.mail: DEBUG
 commission:
   for_renter:
-    in_percent: 3
+    in_percent: 4
   for_owner:
-    in_percent: 3
+    in_percent: 4
 jwt:
   expiration_time_in_minutes:
     access: 5

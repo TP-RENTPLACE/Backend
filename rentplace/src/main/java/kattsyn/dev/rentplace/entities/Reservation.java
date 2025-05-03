@@ -23,11 +23,11 @@ public class Reservation {
     private long reservationId;
 
     @ManyToOne
-    @JoinColumn(name = "property_id") // имя столбца в таблице reservations
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @ManyToOne
-    @JoinColumn(name = "renter_id") // имя столбца в таблице reservations
+    @JoinColumn(name = "renter_id")
     private User renter;
 
     @Column(name = "start_date")

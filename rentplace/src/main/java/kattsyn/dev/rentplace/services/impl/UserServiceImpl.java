@@ -7,6 +7,8 @@ import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
+import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.UserMapper;
 import kattsyn.dev.rentplace.repositories.UserRepository;
@@ -14,8 +16,6 @@ import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +42,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User with email %s not found", email))
         );
+    }
+
+    @Override
+    public UserDTO getUserDTOByEmail(String email) {
+        return userMapper.fromUser(userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(String.format("User with email %s not found", email))));
     }
 
     @Transactional
@@ -122,11 +128,26 @@ public class UserServiceImpl implements UserService {
             user.setGender(userCreateEditDTO.getGender());
         }
 
+        if (userCreateEditDTO.getRole() != null) {
+            user.setRole(userCreateEditDTO.getRole());
+        }
+
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), user);
         }
 
         return userMapper.fromUser(userRepository.save(user));
+    }
+
+    @Override
+    @Transactional
+    public boolean allowedToEditUser(long id, String email) {
+        User user = getUserByEmail(email);
+
+        if (user.getRole() == Role.ROLE_ADMIN || id == user.getUserId()) {
+            return true;
+        }
+        throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to edit user email: %s.", email));
     }
 
     private UserDTO uploadImage(MultipartFile file, User user) {
