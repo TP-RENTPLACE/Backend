@@ -14,7 +14,7 @@ public class JwtRequest {
 
     @Schema(description = "Почта пользователя", example = "warshard1337@gmail.com")
     private String email;
-    @Schema(description = "Код, который пользователь получил на почту", example = "123456")
+    @Schema(description = "Код, который пользователь получил на почту", example = "12345")
     private String code;
 
 }
