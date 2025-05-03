@@ -10,6 +10,10 @@ import java.util.List;
 @Service
 public interface ReservationService {
 
+    boolean ownsReservationOrAdmin(long reservationId, String email);
+
+    boolean allowedToCreateReservationOrAdmin(ReservationCreateEditDTO reservationCreateEditDTO, String email);
+
     Reservation getReservationById(long reservationId);
 
     ReservationDTO getReservationDTOById(long reservationId);

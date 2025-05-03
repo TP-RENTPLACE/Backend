@@ -1,13 +1,18 @@
 package kattsyn.dev.rentplace.services.impl;
 
+import jakarta.transaction.Transactional;
 import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
+import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.PaymentStatus;
+import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.ReservationMapper;
 import kattsyn.dev.rentplace.repositories.ReservationRepository;
 import kattsyn.dev.rentplace.services.ReservationService;
+import kattsyn.dev.rentplace.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +30,29 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
+    private final UserService userService;
+
+    @Override
+    @Transactional
+    public boolean ownsReservationOrAdmin(long reservationId, String email) {
+        User user = userService.getUserByEmail(email);
+        Reservation reservation = getReservationById(reservationId);
+
+        if (user.getRole() == Role.ROLE_ADMIN || reservation.getRenter().getUserId() == user.getUserId()) {
+            return true;
+        }
+        throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to edit or delete reservation id: %s.", reservationId));
+    }
+
+    @Override
+    public boolean allowedToCreateReservationOrAdmin(ReservationCreateEditDTO reservationCreateEditDTO, String email) {
+        User user = userService.getUserByEmail(email);
+
+        if (user.getRole() == Role.ROLE_ADMIN || user.getUserId() == reservationCreateEditDTO.getRenterId()) {
+            return true;
+        }
+        throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to rent for user email: %s.", email));
+    }
 
     @Override
     public List<ReservationDTO> findAllReservations() {
