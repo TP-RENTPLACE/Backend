@@ -6,7 +6,6 @@ import kattsyn.dev.rentplace.enums.Role;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -43,6 +42,4 @@ public class User {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @OneToMany(mappedBy = "renter")
-    private List<Reservation> reservations;
 }

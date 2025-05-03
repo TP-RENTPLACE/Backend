@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import kattsyn.dev.rentplace.enums.Gender;
+import kattsyn.dev.rentplace.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,8 @@ public class UserCreateEditDTO {
     private String surname;
     @Schema(description = "Пол пользователя. MALE или FEMALE")
     private Gender gender;
+    @Schema(description = "Роль пользователя. ROLE_USER или ROLE_ADMIN")
+    private Role role;
     @Schema(description = "Дата рождения пользователя", example = "2004-02-22")
     private LocalDate birthDate;
     @Schema(description = "email пользователя", example = "ivanivanov@gmail.com")
