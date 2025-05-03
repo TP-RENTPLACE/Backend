@@ -52,11 +52,8 @@ public class SecurityConfig {
         };
 
         ADMIN_URLS = new String[]{
-                "/" + apiPath + "/reservations/{id}",
-                "/" + apiPath + "/properties/{id}",
                 "/" + apiPath + "/categories/**",
                 "/" + apiPath + "/facilities/**",
-                "/" + apiPath + "/users/{id}",
                 "/" + apiPath + "/images/{id}"
         };
 
