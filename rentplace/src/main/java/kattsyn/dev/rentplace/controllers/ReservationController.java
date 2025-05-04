@@ -45,6 +45,21 @@ public class ReservationController {
     }
 
     @Operation(
+            summary = "Получение всех бронирований пользователя",
+            description = "Позволяет получить все бронирования пользователя"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservationDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @GetMapping("/my")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<List<ReservationDTO>> getUserReservations(Authentication authentication) {
+        List<ReservationDTO> reservationDTOS = reservationService.findAllReservationsByRenterEmail(authentication.getName());
+        return ResponseEntity.ok(reservationDTOS);
+    }
+
+    @Operation(
             summary = "Получение бронирования",
             description = "Получение бронирования по id")
     @ApiResponses(value = {
@@ -77,7 +92,6 @@ public class ReservationController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
-    @SecurityRequirement(name = "JWT")
     @SecurityRequirement(name = "JWT")
     @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> createReservation(@Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO,

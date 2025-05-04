@@ -60,6 +60,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<ReservationDTO> findAllReservationsByRenterEmail(String email) {
+        return reservationMapper.fromReservations(reservationRepository.findAllByRenterEmail(email));
+    }
+
+    @Override
     public Reservation getReservationById(long reservationId) {
         return reservationRepository.findById(reservationId).orElseThrow(
                 () -> new NotFoundException(String.format("Reservation not found with id: %d", reservationId))

@@ -26,4 +26,6 @@ public interface ReservationService {
 
     List<ReservationDTO> findAllReservations();
 
+    List<ReservationDTO> findAllReservationsByRenterEmail(String email);
+
 }
