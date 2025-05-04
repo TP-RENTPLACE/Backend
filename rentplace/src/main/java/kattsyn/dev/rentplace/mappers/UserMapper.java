@@ -1,5 +1,6 @@
 package kattsyn.dev.rentplace.mappers;
 
+import kattsyn.dev.rentplace.dtos.RegisterRequest;
 import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
@@ -13,6 +14,7 @@ import java.util.List;
 public interface UserMapper {
 
 
+    User fromRegisterRequest(RegisterRequest registerRequest);
     User fromDTO(UserDTO userDTO);
     @Mapping(target = "imageDTO", source = "image")
     UserDTO fromUser(User user);
