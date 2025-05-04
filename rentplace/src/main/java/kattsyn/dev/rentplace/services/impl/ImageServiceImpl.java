@@ -7,12 +7,14 @@ import kattsyn.dev.rentplace.repositories.ImageRepository;
 import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.StorageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
@@ -29,8 +31,9 @@ public class ImageServiceImpl implements ImageService {
         if (file.isEmpty()) {
             throw new RuntimeException("Файл пустой");
         }
-        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
-            throw new RuntimeException("Поддерживаются только JPEG и PNG изображения");
+        log.info("Content-Type: " + contentType);
+        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType) && !"image/svg+xml".equals(contentType)) {
+            throw new RuntimeException("Поддерживаются только JPEG, PNG и SVG изображения");
         }
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new RuntimeException("Файл слишком большой");

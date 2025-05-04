@@ -40,7 +40,7 @@ commission:
     in_percent: 4
 jwt:
   expiration_time_in_minutes:
-    access: 5
+    access: 15
   expiration_time_in_days:
     refresh: 30
   secret:
