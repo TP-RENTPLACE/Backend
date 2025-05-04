@@ -77,6 +77,21 @@ public class PropertyController {
     }
 
     @Operation(
+            summary = "Получение объявлений пользователя",
+            description = "Позволяет получить все объявления пользователя по его токену. Только для авторизованных пользователей."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    @GetMapping("/my")
+    public ResponseEntity<List<PropertyDTO>> getUserProperties(Authentication authentication) {
+        List<PropertyDTO> properties = propertyService.findAllByOwnerEmail(authentication.getName());
+        return ResponseEntity.ok(properties);
+    }
+
+    @Operation(
             summary = "Получить объявление",
             description = "Получить объявление по id"
     )

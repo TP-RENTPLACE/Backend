@@ -18,4 +18,6 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     """)
     List<Property> findAllWithRelations();
 
+    List<Property> findAllByOwnerEmail(String email);
+
 }
