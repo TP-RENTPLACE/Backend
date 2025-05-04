@@ -9,6 +9,7 @@ import kattsyn.dev.rentplace.enums.PaymentStatus;
 import kattsyn.dev.rentplace.enums.Role;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
+import kattsyn.dev.rentplace.exceptions.ValidationException;
 import kattsyn.dev.rentplace.mappers.ReservationMapper;
 import kattsyn.dev.rentplace.repositories.ReservationRepository;
 import kattsyn.dev.rentplace.services.ReservationService;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -102,16 +105,26 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationMapper.fromReservation(reservation);
     }
 
-    /*
-    Поменять метод, чтобы нельзя было иметь отрицательный период бронирования (если разные года аренды)
-     */
-    private int countRentPrice(Reservation reservation) {
+
+    public int countRentPrice(Reservation reservation) {
+        LocalDate startDate = reservation.getStartDate();
+        LocalDate endDate = reservation.getEndDate();
+
+        if (startDate.isBefore(LocalDate.now())) {
+            throw new ValidationException("Reservations start date can't be before now.");
+        }
+
+        if (endDate.isBefore(startDate)) {
+            throw new ValidationException("End date can't be before start date.");
+        }
+
         int period;
         if (reservation.isLongTermRent()) {
-            period = reservation.getEndDate().getMonthValue() - reservation.getStartDate().getMonthValue();
+            period = (int) ChronoUnit.MONTHS.between(startDate, endDate);
         } else {
-            period = reservation.getEndDate().getDayOfYear() - reservation.getStartDate().getDayOfYear();
+            period = (int) ChronoUnit.DAYS.between(startDate, endDate);
         }
+
         return period * reservation.getCostInPeriod();
     }
 
