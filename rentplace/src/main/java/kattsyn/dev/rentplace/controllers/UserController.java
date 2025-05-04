@@ -121,7 +121,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
     @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserDTO> updateUser(
+    public ResponseEntity<UserDTO> updateUserById(
             @PathVariable
             @Parameter(description = "id пользователя", example = "1") long id,
             @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("${api.path}/auth")
 @RequiredArgsConstructor
-@Tag(name = "Аутентификация", description = "Для аутентификации, регистрации, обновлении и запроса токенов и отправки запросов кода на почту.")
+@Tag(name = "Authentication", description = "Для аутентификации, регистрации, обновлении и запроса токенов и отправки запросов кода на почту.")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,9 +25,8 @@ public class AuthController {
             summary = "Запросить код по почте",
             description = "Запрос на получение кода авторизации по почте"
     )
-    public ResponseEntity<JwtResponse> login(@RequestBody CodeRequest codeRequest) {
-        verificationCodeService.generateAndSendCode(codeRequest.getEmail());
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CodeResponse> requestCode(@RequestBody CodeRequest codeRequest) {
+        return ResponseEntity.ok(verificationCodeService.generateAndSendCode(codeRequest.getEmail()));
     }
 
     @Operation(
@@ -67,6 +66,32 @@ public class AuthController {
         return ResponseEntity.ok()
                 .body(tokens);
     }
+
+    @Operation(
+            summary = "Запрос на регистрацию",
+            description = "Получает email и код с почты, а также имя и фамилию пользователя. Возвращает JWT токены"
+    )
+    @PostMapping("/register")
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest registerRequest/*,
+                                             HttpServletResponse response*/) throws AuthException {
+        JwtResponse tokens = authService.register(registerRequest);
+
+        return ResponseEntity.ok()
+                .body(tokens);
+    }
+
+    @Operation(
+            summary = "Проверка валидности введенного кода пользователем",
+            description = "Проверяет правильность введенного кода, отправленного на почту. Использовать в случае, если пользователь новый."
+    )
+    @PostMapping("/validate-code")
+    public ResponseEntity<Void> checkCode(@RequestBody JwtRequest authRequest/*,
+                                             HttpServletResponse response*/) throws AuthException {
+        authService.validateCode(authRequest);
+        return ResponseEntity.ok().build();
+    }
+
+
 
     @Operation(
             summary = "Запрос на обновление AccessToken'а",
