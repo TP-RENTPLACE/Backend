@@ -1,9 +1,7 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
-import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.UserDTO;
+import kattsyn.dev.rentplace.dtos.*;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
@@ -42,6 +40,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User with email %s not found", email))
         );
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override
@@ -148,6 +151,16 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         throw new ForbiddenException(String.format("FORBIDDEN. You are not allowed to edit user email: %s.", email));
+    }
+
+
+    @Override
+    public User createUserWithRegisterRequest(RegisterRequest registerRequest) {
+        User user = userMapper.fromRegisterRequest(registerRequest);
+        user.setRegistrationDate(LocalDate.now());
+        user.setRole(Role.ROLE_USER);
+
+        return userRepository.save(user);
     }
 
     private UserDTO uploadImage(MultipartFile file, User user) {
