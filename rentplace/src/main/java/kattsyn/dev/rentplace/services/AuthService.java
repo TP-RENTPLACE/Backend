@@ -4,11 +4,14 @@ import jakarta.security.auth.message.AuthException;
 import kattsyn.dev.rentplace.auth.JwtAuthentication;
 import kattsyn.dev.rentplace.dtos.JwtRequest;
 import kattsyn.dev.rentplace.dtos.JwtResponse;
+import kattsyn.dev.rentplace.dtos.RegisterRequest;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 
 public interface AuthService {
 
     JwtResponse login(JwtRequest authRequest) throws AuthException;
+
+    JwtResponse register(RegisterRequest registerRequest) throws AuthException;
 
     JwtResponse getAccessToken(String refreshToken);
 
@@ -18,4 +21,5 @@ public interface AuthService {
 
     UserDTO getUserInfo() throws AuthException;
 
+    boolean validateCode(JwtRequest request) throws AuthException;
 }

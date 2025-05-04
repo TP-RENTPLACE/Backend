@@ -6,6 +6,7 @@ import jakarta.security.auth.message.AuthException;
 import kattsyn.dev.rentplace.auth.JwtAuthentication;
 import kattsyn.dev.rentplace.dtos.JwtRequest;
 import kattsyn.dev.rentplace.dtos.JwtResponse;
+import kattsyn.dev.rentplace.dtos.RegisterRequest;
 import kattsyn.dev.rentplace.dtos.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.services.AuthService;
@@ -34,10 +35,22 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProvider jwtProvider;
     private final VerificationCodeService verificationCodeService;
 
+    @Override
+    public JwtResponse register(@NonNull RegisterRequest registerRequest) throws AuthException {
+        User user = userService.createUserWithRegisterRequest(registerRequest);
+
+        return getJwtResponse(user, registerRequest.getEmail(), registerRequest.getCode());
+    }
+
+    @Override
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
 
-        if (verificationCodeService.validateCode(authRequest.getEmail(), authRequest.getCode())) {
+        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode());
+    }
+
+    private JwtResponse getJwtResponse(User user, String email, String code) throws AuthException {
+        if (verificationCodeService.validateCode(email, code)) {
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);
             refreshStorage.put(user.getEmail(), refreshToken);
@@ -45,6 +58,11 @@ public class AuthServiceImpl implements AuthService {
         } else {
             throw new AuthException("Код неправильный");
         }
+    }
+
+    @Override
+    public boolean validateCode(JwtRequest request) {
+        return verificationCodeService.validateCode(request.getEmail(), request.getCode());
     }
 
     public JwtResponse getAccessToken(@NonNull String refreshToken) {
@@ -86,6 +104,8 @@ public class AuthServiceImpl implements AuthService {
         String email = authentication.getName();
         return userService.getUserDTOByEmail(email);
     }
+
+
 
     public JwtAuthentication getAuthInfo() {
         return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
