@@ -65,6 +65,11 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
+    public List<PropertyDTO> findAllByOwnerEmail(String email) {
+        return propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email));
+    }
+
+    @Override
     @Transactional
     public Property getPropertyById(long id) {
         return propertyRepository.findById(id).orElseThrow(
