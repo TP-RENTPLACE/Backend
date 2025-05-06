@@ -7,31 +7,66 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
-import kattsyn.dev.rentplace.entities.Facility;
+import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.services.FacilityService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RequestMapping("${api.path}/facilities")
 @RestController
 @RequiredArgsConstructor
+@Validated
 @Tag(name = "FacilityController", description = "Для взаимодействия с удобствами")
 public class FacilityController {
 
+    //todo: добавить всем методам @SecurityRequirement(name = "JWT"), а каким-то @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
     private final FacilityService facilityService;
+
+    @Operation(
+            summary = "Загрузка фотографии для категории",
+            description = "Загрузка фотографии для категории"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ImageDTO> uploadImage(
+            @Parameter(
+                    description = "Файл фотографии",
+                    required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
+            ) @RequestParam("file") MultipartFile file,
+            @PathVariable
+            @Valid @Parameter(description = "id категории", example = "1") long id) {
+
+        return ResponseEntity.ok(facilityService.uploadImage(file, id));
+    }
 
     @Operation(summary = "Получение всех удобств", description = "Получение всех удобств")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Facility[].class))),
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FacilityDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/")
-    public ResponseEntity<List<Facility>> findAll() {
+    public ResponseEntity<List<FacilityDTO>> findAll() {
         return ResponseEntity.ok(facilityService.findAll());
     }
 
@@ -41,7 +76,7 @@ public class FacilityController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = Facility.class))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = FacilityDTO.class))
             }),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
             @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
@@ -49,16 +84,16 @@ public class FacilityController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Facility> findById(
+    public ResponseEntity<FacilityDTO> findById(
             @PathVariable
-            @Parameter(description = "id удобства", example = "2") long id) {
+            @Valid @Parameter(description = "id удобства", example = "2") long id) {
         return ResponseEntity.ok(facilityService.findById(id));
     }
 
 
     @Operation(
-            summary = "Создать удобство",
-            description = "Создать удобство"
+            summary = "Создать удобство с картинкой",
+            description = "Создать удобство с картинкой"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Успешно создано", content = {
@@ -67,9 +102,12 @@ public class FacilityController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PostMapping("/")
-    public ResponseEntity<Facility> createFacility(FacilityDTO facilityDTO) {
-        return ResponseEntity.ok(facilityService.save(facilityDTO));
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FacilityDTO> createFacilityWithImage
+            (@Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO) {
+        return ResponseEntity.ok(facilityService.createWithImage(facilityCreateEditDTO));
     }
 
     @Operation(
@@ -77,31 +115,35 @@ public class FacilityController {
             description = "Изменить удобство по id"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
             @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PatchMapping("/{id}")
-    public ResponseEntity<Facility> updateFacility(
-            @PathVariable
-            @Parameter(description = "id удобства", example = "10") long id,
-            @RequestBody FacilityDTO facilityDTO) {
-        return ResponseEntity.ok(facilityService.update(id, facilityDTO));
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FacilityDTO> updateFacility(
+            @Valid @ModelAttribute FacilityCreateEditDTO facilityCreateEditDTO,
+            @Valid @PathVariable long id) {
+        return ResponseEntity.ok(facilityService.update(facilityCreateEditDTO, id));
     }
 
     @DeleteMapping("/{id}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
+            @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = FacilityDTO.class))}),
             @ApiResponse(responseCode = "400", description = "Получен некорректный ID", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Категория не найдена", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Удобство не найдено", content = @Content),
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    public ResponseEntity<Facility> deleteFacility(
+    @SecurityRequirement(name = "JWT")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<FacilityDTO> deleteFacility(
             @PathVariable
-            @Parameter(description = "id удобства", example = "10") long id
+            @Valid @Parameter(description = "id удобства", example = "1") long id
     ) {
         return ResponseEntity.ok(facilityService.deleteById(id));
     }

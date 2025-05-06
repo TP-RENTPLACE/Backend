@@ -1,13 +1,18 @@
 package kattsyn.dev.rentplace.mappers;
 
+import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.FacilityDTO;
 import kattsyn.dev.rentplace.entities.Facility;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.*;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+import java.util.List;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {ImageMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface FacilityMapper {
 
-    Facility fromFacilityDTO(FacilityDTO facilityDTO);
+    Facility fromFacilityCreateEditDTO(FacilityCreateEditDTO facilityCreateEditDTO);
+    @Mapping(target = "imageDTO", source = "image")
+    FacilityDTO fromFacility(Facility facility);
+    List<FacilityDTO> fromFacilities(List<Facility> facilities);
 
 }
