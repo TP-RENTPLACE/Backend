@@ -127,7 +127,26 @@ public class UserController {
             @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,
             Authentication authentication) {
         userService.allowedToEditUser(id, authentication.getName());
-        return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
+        return ResponseEntity.ok(userService.updateUserById(id, userCreateEditDTO));
+    }
+
+    @Operation(
+            summary = "Изменение данных авторизованного пользователя",
+            description = "Метод, для того чтобы пользователь изменил данные своего профиля"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
+            @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
+    @SecurityRequirement(name = "JWT")
+    @PatchMapping(path = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserDTO> updateUser(
+            @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,
+            Authentication authentication) {
+        return ResponseEntity.ok(userService.updateUserByEmail(authentication.getName(), userCreateEditDTO));
     }
 
     @Operation(
