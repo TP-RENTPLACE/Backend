@@ -69,16 +69,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO save(UserDTO userDTO) {
-        User user = userMapper.fromDTO(userDTO);
-        user.setRegistrationDate(LocalDate.now());
-
-        user = userRepository.save(user);
-        return userMapper.fromUser(user);
-    }
-
-    @Transactional
-    @Override
     public UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO) {
         User user = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
         user = userRepository.save(user);
@@ -111,8 +101,25 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO update(long id, UserCreateEditDTO userCreateEditDTO) {
+    public UserDTO updateUserByEmail(String email, UserCreateEditDTO userCreateEditDTO) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException(String.format("User with email %s not found", email))
+        );
+
+        return updateUser(user, userCreateEditDTO);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO updateUserById(long id, UserCreateEditDTO userCreateEditDTO) {
         User user = getUserById(id);
+
+        return updateUser(user, userCreateEditDTO);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO updateUser(User user, UserCreateEditDTO userCreateEditDTO) {
 
         if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
             user.setName(userCreateEditDTO.getName());

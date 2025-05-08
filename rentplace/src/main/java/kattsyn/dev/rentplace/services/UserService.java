@@ -20,15 +20,17 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    UserDTO save(UserDTO userDTO);
-
     UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO);
 
     void deleteById(long id);
 
     ImageDTO uploadImage(MultipartFile file, long id);
 
-    UserDTO update(long id, UserCreateEditDTO userCreateEditDTO);
+    UserDTO updateUserById(long id, UserCreateEditDTO userCreateEditDTO);
+
+    UserDTO updateUser(User user, UserCreateEditDTO userCreateEditDTO);
+
+    UserDTO updateUserByEmail(String email, UserCreateEditDTO userCreateEditDTO);
 
     boolean allowedToEditUser(long id, String email);
 
