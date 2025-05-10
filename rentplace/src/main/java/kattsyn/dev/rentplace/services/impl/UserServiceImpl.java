@@ -121,32 +121,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateUser(User user, UserCreateEditDTO userCreateEditDTO) {
 
-        if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
-            user.setName(userCreateEditDTO.getName());
-        }
-        if (userCreateEditDTO.getSurname() != null && !userCreateEditDTO.getSurname().isBlank()) {
-            user.setSurname(userCreateEditDTO.getSurname());
-        }
-        if (userCreateEditDTO.getEmail() != null && !userCreateEditDTO.getEmail().isBlank()) {
-            user.setEmail(userCreateEditDTO.getEmail());
-        }
-        if (userCreateEditDTO.getBirthDate() != null) {
-            user.setBirthDate(userCreateEditDTO.getBirthDate());
-        }
+        User updatedUser = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
 
-        if (userCreateEditDTO.getGender() != null) {
-            user.setGender(userCreateEditDTO.getGender());
-        }
-
-        if (userCreateEditDTO.getRole() != null) {
-            user.setRole(userCreateEditDTO.getRole());
-        }
+        updatedUser.setUserId(user.getUserId());
+        updatedUser.setRegistrationDate(user.getRegistrationDate());
 
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
-            return uploadImage(userCreateEditDTO.getFile(), user);
+            return uploadImage(userCreateEditDTO.getFile(), updatedUser);
         }
 
-        return userMapper.fromUser(userRepository.save(user));
+        return userMapper.fromUser(userRepository.save(updatedUser));
     }
 
     @Override
