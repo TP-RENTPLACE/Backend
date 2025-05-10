@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserDTO> findAll() {
-        return userMapper.fromUsers(userRepository.findAll());
+        return userMapper.fromUsers(userRepository.findAllWithRelations());
     }
 
     @Transactional
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override
