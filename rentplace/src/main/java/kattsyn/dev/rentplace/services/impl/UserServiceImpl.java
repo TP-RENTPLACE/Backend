@@ -69,16 +69,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO save(UserDTO userDTO) {
-        User user = userMapper.fromDTO(userDTO);
-        user.setRegistrationDate(LocalDate.now());
-
-        user = userRepository.save(user);
-        return userMapper.fromUser(user);
-    }
-
-    @Transactional
-    @Override
     public UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO) {
         User user = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
         user = userRepository.save(user);
@@ -111,35 +101,36 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO update(long id, UserCreateEditDTO userCreateEditDTO) {
+    public UserDTO updateUserByEmail(String email, UserCreateEditDTO userCreateEditDTO) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException(String.format("User with email %s not found", email))
+        );
+
+        return updateUser(user, userCreateEditDTO);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO updateUserById(long id, UserCreateEditDTO userCreateEditDTO) {
         User user = getUserById(id);
 
-        if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
-            user.setName(userCreateEditDTO.getName());
-        }
-        if (userCreateEditDTO.getSurname() != null && !userCreateEditDTO.getSurname().isBlank()) {
-            user.setSurname(userCreateEditDTO.getSurname());
-        }
-        if (userCreateEditDTO.getEmail() != null && !userCreateEditDTO.getEmail().isBlank()) {
-            user.setEmail(userCreateEditDTO.getEmail());
-        }
-        if (userCreateEditDTO.getBirthDate() != null) {
-            user.setBirthDate(userCreateEditDTO.getBirthDate());
-        }
+        return updateUser(user, userCreateEditDTO);
+    }
 
-        if (userCreateEditDTO.getGender() != null) {
-            user.setGender(userCreateEditDTO.getGender());
-        }
+    @Transactional
+    @Override
+    public UserDTO updateUser(User user, UserCreateEditDTO userCreateEditDTO) {
 
-        if (userCreateEditDTO.getRole() != null) {
-            user.setRole(userCreateEditDTO.getRole());
-        }
+        User updatedUser = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
+
+        updatedUser.setUserId(user.getUserId());
+        updatedUser.setRegistrationDate(user.getRegistrationDate());
 
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
-            return uploadImage(userCreateEditDTO.getFile(), user);
+            return uploadImage(userCreateEditDTO.getFile(), updatedUser);
         }
 
-        return userMapper.fromUser(userRepository.save(user));
+        return userMapper.fromUser(userRepository.save(updatedUser));
     }
 
     @Override
