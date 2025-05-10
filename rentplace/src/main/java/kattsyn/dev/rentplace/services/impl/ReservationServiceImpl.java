@@ -48,6 +48,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public boolean allowedToCreateReservationOrAdmin(ReservationCreateEditDTO reservationCreateEditDTO, String email) {
         User user = userService.getUserByEmail(email);
 
@@ -58,16 +59,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public List<ReservationDTO> findAllReservations() {
-        return reservationMapper.fromReservations(reservationRepository.findAll());
+        return reservationMapper.fromReservations(reservationRepository.findAllWithRelations());
     }
 
     @Override
+    @Transactional
     public List<ReservationDTO> findAllReservationsByRenterEmail(String email) {
         return reservationMapper.fromReservations(reservationRepository.findAllByRenterEmail(email));
     }
 
     @Override
+    @Transactional
     public Reservation getReservationById(long reservationId) {
         return reservationRepository.findById(reservationId).orElseThrow(
                 () -> new NotFoundException(String.format("Reservation not found with id: %d", reservationId))
@@ -75,11 +79,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public ReservationDTO getReservationDTOById(long reservationId) {
         return reservationMapper.fromReservation(getReservationById(reservationId));
     }
 
     @Override
+    @Transactional
     public ReservationDTO createReservation(ReservationCreateEditDTO reservationCreateEditDTO) {
         Reservation reservation = reservationMapper.fromReservationCreateEditDTO(reservationCreateEditDTO);
         setPrices(reservation);
@@ -89,6 +95,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public ReservationDTO updateReservation(long reservationId, ReservationCreateEditDTO reservationCreateEditDTO) {
         Reservation reservation = getReservationById(reservationId);
         Reservation updatedReservation = reservationMapper.fromReservationCreateEditDTO(reservationCreateEditDTO);
@@ -99,6 +106,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public ReservationDTO deleteById(long reservationId) {
         Reservation reservation = getReservationById(reservationId);
         reservationRepository.delete(reservation);

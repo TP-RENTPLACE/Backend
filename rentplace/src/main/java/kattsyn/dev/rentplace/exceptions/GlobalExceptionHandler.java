@@ -1,5 +1,6 @@
 package kattsyn.dev.rentplace.exceptions;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 import kattsyn.dev.rentplace.dtos.ErrorResponse;
@@ -49,6 +50,17 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 "AUTHENTICATION_FAILED",
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(ExpiredJwtException ex, WebRequest request) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "JSON WEB TOKEN EXPIRED",
                 ex.getMessage(),
                 request.getDescription(false).replace("uri=", "")
         );
