@@ -107,4 +107,6 @@ public class Property {
     )
     private Set<Facility> facilities = new HashSet<>();
 
+    @ManyToMany(mappedBy = "favourites")
+    private Set<User> usersAddedInFavourites = new HashSet<>();
 }
