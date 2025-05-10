@@ -58,7 +58,7 @@ public class FavouritesController {
     }
 
     @Operation(
-            summary = "Добавить объявление в избранное"
+            summary = "Удалить объявление из избранного"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Успешно. Без тела ответа", content = @Content),
