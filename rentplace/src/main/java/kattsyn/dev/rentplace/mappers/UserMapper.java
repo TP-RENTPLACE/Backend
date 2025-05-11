@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.mappers;
 
-import kattsyn.dev.rentplace.dtos.RegisterRequest;
-import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.UserDTO;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,6 +1,9 @@
 package kattsyn.dev.rentplace.services;
 
-import kattsyn.dev.rentplace.dtos.*;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
 import org.springframework.web.multipart.MultipartFile;
 

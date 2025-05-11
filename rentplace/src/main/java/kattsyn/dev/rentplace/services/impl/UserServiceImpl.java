@@ -1,7 +1,10 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.*;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
