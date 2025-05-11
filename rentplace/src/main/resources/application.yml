@@ -34,14 +34,14 @@ logging:
     org.springframework.mail: DEBUG
     com.sun.mail: DEBUG
 commission:
-  for_renter:
-    in_percent: 4
-  for_owner:
-    in_percent: 4
+  for-renter:
+    in-percent: 4
+  for-owner:
+    in-percent: 4
 jwt:
-  expiration_time_in_minutes:
+  expiration-time-in-minutes:
     access: 15
-  expiration_time_in_days:
+  expiration-time-in-days:
     refresh: 30
   secret:
     access: IJKTakIvc2HS2/MDqMWjfFMobX13mzQWlIi5rr2fTGNNlbWkDyuGi+FJO0b82kiERAF1k05iFdymIwxtRb4vcA==

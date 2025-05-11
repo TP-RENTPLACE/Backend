@@ -26,9 +26,9 @@ import java.util.List;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    @Value("${commission.for_renter.in_percent}")
+    @Value("${commission.for-renter.in-percent}")
     private int commissionForRenterInPercent;
-    @Value("${commission.for_owner.in_percent}")
+    @Value("${commission.for-owner.in-percent}")
     private int commissionForOwnerInPercent;
 
     private final ReservationRepository reservationRepository;
