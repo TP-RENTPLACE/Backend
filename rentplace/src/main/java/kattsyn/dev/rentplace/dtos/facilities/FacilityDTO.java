@@ -1,8 +1,9 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.facilities;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

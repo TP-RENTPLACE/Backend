@@ -1,9 +1,9 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.FacilityDTO;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import kattsyn.dev.rentplace.entities.Facility;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.enums.ImageType;
