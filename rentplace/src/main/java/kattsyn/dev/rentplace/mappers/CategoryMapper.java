@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.mappers;
 
 
-import kattsyn.dev.rentplace.dtos.CategoryCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.CategoryDTO;
+import kattsyn.dev.rentplace.dtos.categories.CategoryCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.categories.CategoryDTO;
 import kattsyn.dev.rentplace.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
