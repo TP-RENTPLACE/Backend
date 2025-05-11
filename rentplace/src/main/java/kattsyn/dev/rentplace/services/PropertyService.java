@@ -3,6 +3,7 @@ package kattsyn.dev.rentplace.services;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.filters.PropertyFilterDTO;
 import kattsyn.dev.rentplace.entities.Property;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,8 @@ public interface PropertyService {
     List<PropertyDTO> findAll();
 
     List<PropertyDTO> findAllByOwnerEmail(String email);
+
+    List<PropertyDTO> findAllByFilter(PropertyFilterDTO filter);
 
     PropertyDTO findById(long id);
 

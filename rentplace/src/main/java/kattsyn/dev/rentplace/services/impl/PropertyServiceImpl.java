@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.filters.PropertyFilterDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.SortType;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.ImageMapper;
@@ -17,8 +19,10 @@ import kattsyn.dev.rentplace.repositories.PropertyRepository;
 import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.PropertyService;
 import kattsyn.dev.rentplace.services.UserService;
+import kattsyn.dev.rentplace.specifications.PropertySpecification;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,6 +71,24 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public List<PropertyDTO> findAllByOwnerEmail(String email) {
         return propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email));
+    }
+
+    @Override
+    public List<PropertyDTO> findAllByFilter(PropertyFilterDTO filter) {
+        return propertyMapper.fromProperties(
+                propertyRepository.findAll(new PropertySpecification(filter), buildSort(filter.getSortType()))
+        );
+    }
+
+    private Sort buildSort(SortType sortType) {
+        if (sortType == null) return Sort.unsorted();
+
+        return switch (sortType) {
+            case MOST_OLD -> Sort.by(Sort.Order.asc("propertyId"));
+            case MOST_RECENT -> Sort.by(Sort.Order.desc("propertyId"));
+            case MOST_EXPENSIVE -> Sort.by(Sort.Order.desc("cost"));
+            case MOST_CHEAP -> Sort.by(Sort.Order.asc("cost"));
+        };
     }
 
     @Override

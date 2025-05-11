@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import kattsyn.dev.rentplace.dtos.ImageDTO;
 import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.filters.PropertyFilterDTO;
 import kattsyn.dev.rentplace.services.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,6 +74,20 @@ public class PropertyController {
     @GetMapping("/")
     public ResponseEntity<List<PropertyDTO>> getProperties() {
         List<PropertyDTO> properties = propertyService.findAll();
+        return ResponseEntity.ok(properties);
+    }
+
+    @Operation(
+            summary = "Получение всех объявлений, с фильтрацией",
+            description = "Позволяет получить все объявления, с фильтрацией"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @PostMapping(path = "/filtered/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<PropertyDTO>> getPropertiesByFilter(@Valid @ModelAttribute PropertyFilterDTO propertyFilter) {
+        List<PropertyDTO> properties = propertyService.findAllByFilter(propertyFilter);
         return ResponseEntity.ok(properties);
     }
 
