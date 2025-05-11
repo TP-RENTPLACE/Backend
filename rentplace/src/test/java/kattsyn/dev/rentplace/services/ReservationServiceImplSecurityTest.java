@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.Role;

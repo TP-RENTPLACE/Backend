@@ -92,6 +92,38 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push-docker-image
     steps:
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval $(ssh-agent -s)
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: List files
+        run: ls -la
+
+      - name: Create app.env file
+        run: |
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "JWT_SECRET_ACCESS=${{ secrets.JWT_SECRET_ACCESS }}" >> .env
+          echo "JWT_SECRET_REFRESH=${{ secrets.JWT_SECRET_REFRESH }}" >> .env
+          echo "JWT_EXPIRATION_TIME_IN_DAYS_REFRESH=${{ secrets.JWT_EXPIRATION_TIME_IN_DAYS_REFRESH }}" >> .env
+          echo "JWT_EXPIRATION_TIME_IN-MINUTES_ACCESS=${{ secrets.JWT_EXPIRATION_TIME_IN_MINUTES_ACCESS }}" >> .env
+          echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+          echo "MAIL_PASSWORD =${{ secrets.MAIL_PASSWORD }}" >> .env
+          echo "COMMISSION_FOR_RENTER_IN_PERCENT=${{ secrets.COMMISSION_FOR_RENTER_IN_PERCENT }}" >> .env
+          echo "COMMISSION_FOR_OWNER_IN_PERCENT=${{ secrets.COMMISSION_FOR_OWNER_IN_PERCENT }}" >> .env
+          echo "OPENROUTER_API_URL=${{ secrets.OPENROUTER_API_URL }}" >> .env
+          echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" >> .env
+          echo "OPENROUTER_API_MODEL=${{ secrets.OPENROUTER_API_MODEL }}" >> .env
+          echo "OPENROUTER_API_DEFAULT_SYSTEM_PROMPT=${{ secrets.OPENROUTER_API_DEFAULT_SYSTEM_PROMPT }}" >> .env
+
+      - name: Copy files to the server
+        run: |
+          eval $(ssh-agent -s)
+          scp ./.env ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.APP_PATH }}/
       - name: SSH Execute Commands
         uses: appleboy/ssh-action@v1
         with:

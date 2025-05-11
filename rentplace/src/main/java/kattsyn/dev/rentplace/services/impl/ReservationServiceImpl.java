@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.ReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.PaymentStatus;
@@ -26,9 +26,9 @@ import java.util.List;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    @Value("${commission.for_renter.in_percent}")
+    @Value("${commission.for-renter.in-percent}")
     private int commissionForRenterInPercent;
-    @Value("${commission.for_owner.in_percent}")
+    @Value("${commission.for-owner.in-percent}")
     private int commissionForOwnerInPercent;
 
     private final ReservationRepository reservationRepository;

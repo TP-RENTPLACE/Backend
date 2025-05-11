@@ -1,4 +1,4 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.categories;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -11,14 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @ToString
-@Schema(name = "FacilityCreateEditDTO", type = "object")
-public class FacilityCreateEditDTO {
+@Schema(name = "CategoryCreateEditDTO", type = "object")
+public class CategoryCreateEditDTO {
 
-    @Schema(description = "Фото удобства")
+    @Schema(description = "Фото категории")
     private MultipartFile file;
     @NotBlank
     @Size(min = 1, max = 50)
-    @Schema(description = "Название удобства", example = "Душ")
+    @Schema(description = "Название категории", example = "Пещера")
     private String name;
 
 }

@@ -1,6 +1,6 @@
 package kattsyn.dev.rentplace.services;
 
-import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
 
 import java.util.List;
 

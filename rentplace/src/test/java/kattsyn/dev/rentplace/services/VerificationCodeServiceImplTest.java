@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import kattsyn.dev.rentplace.dtos.CodeResponse;
+import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
 import kattsyn.dev.rentplace.entities.VerificationCode;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.repositories.VerificationCodeRepository;

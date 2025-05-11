@@ -1,10 +1,14 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.properties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
+import kattsyn.dev.rentplace.dtos.categories.CategoryDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import kattsyn.dev.rentplace.enums.PropertyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

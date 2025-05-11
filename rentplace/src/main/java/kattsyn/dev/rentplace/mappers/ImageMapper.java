@@ -1,6 +1,6 @@
 package kattsyn.dev.rentplace.mappers;
 
-import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

@@ -1,6 +1,6 @@
 package kattsyn.dev.rentplace.services.impl;
 
-import kattsyn.dev.rentplace.dtos.CodeResponse;
+import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
 import kattsyn.dev.rentplace.entities.VerificationCode;
 import kattsyn.dev.rentplace.enums.AuthType;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
