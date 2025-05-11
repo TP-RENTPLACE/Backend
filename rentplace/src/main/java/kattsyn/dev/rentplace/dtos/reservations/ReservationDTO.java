@@ -1,7 +1,9 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.reservations;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
 import kattsyn.dev.rentplace.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

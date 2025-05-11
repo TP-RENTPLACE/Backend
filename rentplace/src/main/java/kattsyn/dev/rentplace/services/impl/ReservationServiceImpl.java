@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.ReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.PaymentStatus;
