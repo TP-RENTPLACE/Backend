@@ -1,20 +1,20 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CodeRequest {
+public class JwtRequest {
 
-    @Email
     @Schema(description = "Почта пользователя", example = "warshard1337@gmail.com")
     private String email;
+    @Schema(description = "Код, который пользователь получил на почту", example = "12345")
+    private String code;
 
 }
