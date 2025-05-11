@@ -2,10 +2,10 @@ package kattsyn.dev.rentplace.services;
 
 import jakarta.security.auth.message.AuthException;
 import kattsyn.dev.rentplace.auth.JwtAuthentication;
-import kattsyn.dev.rentplace.dtos.JwtRequest;
-import kattsyn.dev.rentplace.dtos.JwtResponse;
-import kattsyn.dev.rentplace.dtos.RegisterRequest;
-import kattsyn.dev.rentplace.dtos.UserDTO;
+import kattsyn.dev.rentplace.dtos.requests.JwtRequest;
+import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 
 public interface AuthService {
 
