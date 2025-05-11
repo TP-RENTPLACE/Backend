@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.mappers;
 
 
-import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
 import kattsyn.dev.rentplace.entities.Category;
 import kattsyn.dev.rentplace.entities.Facility;
 import kattsyn.dev.rentplace.entities.Property;
