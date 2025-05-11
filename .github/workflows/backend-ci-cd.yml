@@ -110,7 +110,7 @@ jobs:
           echo "JWT_SECRET_ACCESS=${{ secrets.JWT_SECRET_ACCESS }}" >> .env
           echo "JWT_SECRET_REFRESH=${{ secrets.JWT_SECRET_REFRESH }}" >> .env
           echo "JWT_EXPIRATION_TIME_IN_DAYS_REFRESH=${{ secrets.JWT_EXPIRATION_TIME_IN_DAYS_REFRESH }}" >> .env
-          echo "JWT_EXPIRATION_TIME_IN-MINUTES_ACCESS=${{ secrets.JWT_EXPIRATION_TIME_IN_MINUTES_ACCESS }}" >> .env
+          echo "JWT_EXPIRATION_TIME_IN_MINUTES_ACCESS=${{ secrets.JWT_EXPIRATION_TIME_IN_MINUTES_ACCESS }}" >> .env
           echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
           echo "MAIL_PASSWORD =${{ secrets.MAIL_PASSWORD }}" >> .env
           echo "COMMISSION_FOR_RENTER_IN_PERCENT=${{ secrets.COMMISSION_FOR_RENTER_IN_PERCENT }}" >> .env
