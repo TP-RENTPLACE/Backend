@@ -3,7 +3,7 @@ package kattsyn.dev.rentplace.exceptions;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
-import kattsyn.dev.rentplace.dtos.ErrorResponse;
+import kattsyn.dev.rentplace.dtos.responses.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
