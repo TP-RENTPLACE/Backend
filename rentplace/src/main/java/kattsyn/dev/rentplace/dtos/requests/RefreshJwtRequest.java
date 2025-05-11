@@ -1,4 +1,4 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
