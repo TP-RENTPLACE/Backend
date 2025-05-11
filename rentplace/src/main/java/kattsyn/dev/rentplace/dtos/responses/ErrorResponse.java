@@ -1,4 +1,4 @@
-package kattsyn.dev.rentplace.dtos;
+package kattsyn.dev.rentplace.dtos.responses;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
