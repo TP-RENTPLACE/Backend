@@ -70,6 +70,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(PUBLIC_URLS).permitAll()
                                 .requestMatchers(HttpMethod.GET, PUBLIC_URLS_GET).permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/properties/filtered/").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, ADMIN_URLS).hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, ADMIN_URLS).hasAuthority("ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.PATCH, ADMIN_URLS).hasAuthority("ROLE_ADMIN")
