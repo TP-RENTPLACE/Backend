@@ -46,6 +46,12 @@ jwt:
   secret:
     access: IJKTakIvc2HS2/MDqMWjfFMobX13mzQWlIi5rr2fTGNNlbWkDyuGi+FJO0b82kiERAF1k05iFdymIwxtRb4vcA==
     refresh: +fTEQwJivdxcqp/FIAi6N26GWs31utu+AJ/TU6i4zINYCTCVJnIunKzOmXNCMcZgCZ74Pqi0DUBQ4vf8O5V+HA==
+openrouter:
+  api:
+    url: ${OPENROUTER_API_URL}
+    key: ${OPENROUTER_API_KEY}
+    model: ${OPENROUTER_API_MODEL}
+    default-system-prompt: ${OPENROUTER_API_SYSTEM_PROMPT}
 
 api:
   path: api/v1
