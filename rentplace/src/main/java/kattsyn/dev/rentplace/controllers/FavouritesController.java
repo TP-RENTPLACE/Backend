@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
 import kattsyn.dev.rentplace.services.FavouritesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
