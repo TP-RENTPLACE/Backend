@@ -29,6 +29,11 @@ spring:
           ssl:
             enable: false
             #trust: smtp.gmail.com
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/html
+  api-docs:
+    path: /v3/api-docs
 logging:
   level:
     org.springframework.mail: DEBUG
