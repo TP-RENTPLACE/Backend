@@ -38,7 +38,7 @@ public class PropertyController {
     @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Массовая загрузка фотографий",
-            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 10. Максимальный размер каждого файла - 10MB.")
+            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 20. Максимальный размер каждого файла - 5MB.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageDTO[].class))),
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (превышено кол-во файлов, неверный формат и т.д.)", content = @Content),

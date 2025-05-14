@@ -36,7 +36,7 @@ public class UserController {
 
     @Operation(
             summary = "Загрузка фотографии для пользователя",
-            description = "Загрузка фотографии для пользователя"
+            description = "Загрузка фотографии для пользователя. Размер фотографии до 5Мб"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
