@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/favourites")
+@RequestMapping("${api.path}/favourites")
 @RequiredArgsConstructor
 @Tag(name = "FavouritesController", description = "Контроллер для работы с избранными объявлениями пользователя")
 public class FavouritesController {
