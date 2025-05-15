@@ -118,6 +118,11 @@ public class ImageServiceImpl implements ImageService {
         return storageService.loadAsResource(image.getFileName(), image.getAdditionalPath());
     }
 
+    @Override
+    public Image save(Image image) {
+        return imageRepository.save(image);
+    }
+
     @Transactional
     @Override
     public void deleteImage(long id) {
