@@ -154,8 +154,14 @@ public class PropertyServiceImpl implements PropertyService {
         String path = PathResolver.resolvePath(ImageType.PROPERTY, property.getPropertyId());
         List<Image> savedImages = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            Image image = imageService.uploadImage(file, path);
+        for (int i = 0; i < files.length; i++) {
+            Image image = imageService.uploadImage(files[i], path);
+
+            if (i == 0 && property.getImages().isEmpty()) {
+                image.setPreviewImage(true);
+                imageService.save(image);
+            }
+
             property.getImages().add(image);
             savedImages.add(image);
         }
