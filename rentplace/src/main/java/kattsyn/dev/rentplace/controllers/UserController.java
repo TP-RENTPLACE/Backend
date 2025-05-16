@@ -151,7 +151,7 @@ public class UserController {
 
     @Operation(
             summary = "Удалить пользователя",
-            description = "Удалить пользователя по ID"
+            description = "Удалить пользователя по ID. Использовать в крайних случаях. При удалении удаляются все его брони и объявления."
     )
     @DeleteMapping("/{id}")
     @ApiResponses(value = {
