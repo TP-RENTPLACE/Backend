@@ -9,6 +9,7 @@ import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.UserStatus;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.UserMapper;
@@ -156,6 +157,30 @@ public class UserServiceImpl implements UserService {
         user.setRole(Role.ROLE_USER);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void blockUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_BLOCKED);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void activateUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deactivateUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_INACTIVE);
+        userRepository.save(user);
     }
 
     private UserDTO uploadImage(MultipartFile file, User user) {

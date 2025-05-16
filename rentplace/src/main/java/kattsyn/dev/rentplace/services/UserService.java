@@ -38,4 +38,10 @@ public interface UserService {
     boolean allowedToEditUser(long id, String email);
 
     User createUserWithRegisterRequest(RegisterRequest registerRequest);
+
+    void blockUser(long userId);
+
+    void activateUser(long userId);
+
+    void deactivateUser(long userId);
 }
