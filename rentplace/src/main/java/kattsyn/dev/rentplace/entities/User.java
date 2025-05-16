@@ -50,4 +50,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "property_id"))
     private Set<Property> favourites = new HashSet<>();
 
+    @OneToMany(mappedBy = "renter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reservation> reservations = new HashSet<>();
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Property> properties = new HashSet<>();
 }
