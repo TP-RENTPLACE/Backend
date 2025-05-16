@@ -30,6 +30,9 @@ spring:
             enable: false
             #trust: smtp.gmail.com
 springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
 logging:
