@@ -74,6 +74,19 @@ public class AuthController {
     }
 
     @Operation(
+            summary = "Запрос на авторизацию в админ-панель",
+            description = "Получает email и код с почты. Возвращает JWT токены. Пускает только администраторов."
+    )
+    @PostMapping("/admin/login")
+    public ResponseEntity<JwtResponse> adminLogin(@RequestBody JwtRequest authRequest/*,
+                                             HttpServletResponse response*/) throws AuthException {
+        JwtResponse tokens = authService.adminLogin(authRequest);
+
+        return ResponseEntity.ok()
+                .body(tokens);
+    }
+
+    @Operation(
             summary = "Запрос на регистрацию",
             description = "Получает email и код с почты, а также имя и фамилию пользователя. Возвращает JWT токены"
     )
