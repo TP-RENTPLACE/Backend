@@ -12,7 +12,6 @@ import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
 import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
 import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.services.AuthService;
-import kattsyn.dev.rentplace.services.VerificationCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final VerificationCodeService verificationCodeService;
 
     @PostMapping("/code-request")
     @Operation(
@@ -32,7 +30,7 @@ public class AuthController {
             description = "Запрос на получение кода авторизации по почте"
     )
     public ResponseEntity<CodeResponse> requestCode(@RequestBody CodeRequest codeRequest) {
-        return ResponseEntity.ok(verificationCodeService.generateAndSendCode(codeRequest.getEmail()));
+        return ResponseEntity.ok(authService.getCodeResponse(codeRequest.getEmail()));
     }
 
     @Operation(
