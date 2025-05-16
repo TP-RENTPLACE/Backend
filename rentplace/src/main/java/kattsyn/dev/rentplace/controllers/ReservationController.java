@@ -39,6 +39,8 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservationDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')" )
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/")
     public ResponseEntity<List<ReservationDTO>> getReservations() {
         List<ReservationDTO> reservationDTOS = reservationService.findAllReservations();
@@ -72,7 +74,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDTO> getReservation(@PathVariable
@@ -114,7 +116,6 @@ public class ReservationController {
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
     @SecurityRequirement(name = "JWT")
-    @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> updateReservation(@PathVariable @Parameter(description = "id бронирования для изменения") long id,
                                                             @Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
@@ -132,7 +133,6 @@ public class ReservationController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
-    @SecurityRequirement(name = "JWT")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable

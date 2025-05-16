@@ -88,6 +88,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDTO createReservation(ReservationCreateEditDTO reservationCreateEditDTO) {
         Reservation reservation = reservationMapper.fromReservationCreateEditDTO(reservationCreateEditDTO);
+
+        if (reservation.getRenter().getUserId() == reservation.getProperty().getOwner().getUserId()) {
+            throw new ValidationException(String.format("Owner id: %s can't rent his own property id: %s",
+                    reservationCreateEditDTO.getRenterId(), reservationCreateEditDTO.getPropertyId()));
+        }
+
         setPrices(reservation);
         reservation.setPaymentStatus(PaymentStatus.NOT_PAID);
 

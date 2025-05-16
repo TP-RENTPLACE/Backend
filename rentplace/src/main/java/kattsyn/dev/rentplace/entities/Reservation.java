@@ -26,7 +26,7 @@ public class Reservation {
     @JoinColumn(name = "property_id")
     private Property property;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "renter_id")
     private User renter;
 
