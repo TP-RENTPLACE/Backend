@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import kattsyn.dev.rentplace.enums.Gender;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,8 @@ public class UserDTO {
     private String surname;
     @Schema(description = "Пол пользователя. MALE или FEMALE")
     private Gender gender;
+    @Schema(description = "Статус профиля пользователя. STATUS_BLOCKED, STATUS_ACTIVE или STATUS_INACTIVE")
+    private UserStatus userStatus;
     @Schema(description = "Роль пользователя. ROLE_USER или ROLE_ADMIN")
     private Role role;
     @Schema(description = "Дата рождения пользователя", example = "2004-02-22")
