@@ -3,13 +3,15 @@ package kattsyn.dev.rentplace.services.impl;
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.lang.NonNull;
 import jakarta.security.auth.message.AuthException;
-import kattsyn.dev.rentplace.auth.JwtAuthentication;
 import kattsyn.dev.rentplace.dtos.requests.JwtRequest;
+import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
 import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
 import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
 import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
+import kattsyn.dev.rentplace.enums.AuthType;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.UserStatus;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.UserService;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +48,23 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public CodeResponse getCodeResponse(String email) {
+        Optional<User> user = userService.getUserOptionalByEmail(email);
+        CodeResponse codeResponse;
+        codeResponse = user.map(value -> new CodeResponse(AuthType.AUTH_LOGIN, value.getUserStatus()))
+                .orElseGet(() -> new CodeResponse(AuthType.AUTH_REGISTER, null));
+
+        if (codeResponse.getAuthType() == AuthType.AUTH_REGISTER
+                || (user.isPresent()
+                && codeResponse.getAuthType() == AuthType.AUTH_LOGIN
+                && user.get().getUserStatus() == UserStatus.STATUS_ACTIVE)) {
+            new Thread(() -> verificationCodeService.generateAndSendCode(email)).start();
+        }
+
+        return codeResponse;
+    }
+
+    @Override
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
 
@@ -63,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private JwtResponse getJwtResponse(User user, String email, String code) throws AuthException {
-        if ((email.equals("testadmin@gmail.com") && code.equals("12345")) ||verificationCodeService.validateCode(email, code)) { //todo: delete test user
+        if ((email.equals("testadmin@gmail.com") && code.equals("12345")) || verificationCodeService.validateCode(email, code)) { //todo: delete test user
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);
             refreshStorage.put(user.getEmail(), refreshToken);
@@ -74,8 +94,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean validateCode(JwtRequest request) {
-        return verificationCodeService.validateCode(request.getEmail(), request.getCode());
+    public void validateCode(JwtRequest request) {
+        verificationCodeService.validateCode(request.getEmail(), request.getCode());
     }
 
     public JwtResponse getAccessToken(@NonNull String refreshToken) {
@@ -118,10 +138,5 @@ public class AuthServiceImpl implements AuthService {
         return userService.getUserDTOByEmail(email);
     }
 
-
-
-    public JwtAuthentication getAuthInfo() {
-        return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-    }
 
 }

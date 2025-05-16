@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotFoundException(String.format("User with email %s not found", email))
         );
+    }
+
+    @Override
+    public Optional<User> getUserOptionalByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override

@@ -8,12 +8,15 @@ import kattsyn.dev.rentplace.entities.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
     List<UserDTO> findAll();
 
     User getUserByEmail(String email);
+
+    Optional<User> getUserOptionalByEmail(String email);
 
     boolean existsByEmail(String email);
 
