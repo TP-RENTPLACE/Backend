@@ -3,6 +3,7 @@ package kattsyn.dev.rentplace.entities;
 import jakarta.persistence.*;
 import kattsyn.dev.rentplace.enums.Gender;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.UserStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -39,6 +40,10 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "user_status")
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "image_id")
