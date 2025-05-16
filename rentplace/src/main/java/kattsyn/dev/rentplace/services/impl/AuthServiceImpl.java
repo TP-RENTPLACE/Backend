@@ -9,6 +9,8 @@ import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
 import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
 import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.User;
+import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.services.AuthService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.auth.JwtProvider;
@@ -45,6 +47,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
+
+        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode());
+    }
+
+    @Override
+    public JwtResponse adminLogin(@NonNull JwtRequest authRequest) throws AuthException {
+        final User user = userService.getUserByEmail(authRequest.getEmail());
+
+        if (user.getRole() != Role.ROLE_ADMIN) {
+            throw new ForbiddenException("You are not allowed to access admin-panel.");
+        }
 
         return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode());
     }
