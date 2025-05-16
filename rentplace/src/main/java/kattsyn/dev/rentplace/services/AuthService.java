@@ -11,6 +11,8 @@ public interface AuthService {
 
     JwtResponse login(JwtRequest authRequest) throws AuthException;
 
+    JwtResponse adminLogin(JwtRequest authRequest) throws AuthException;
+
     JwtResponse register(RegisterRequest registerRequest) throws AuthException;
 
     JwtResponse getAccessToken(String refreshToken);
