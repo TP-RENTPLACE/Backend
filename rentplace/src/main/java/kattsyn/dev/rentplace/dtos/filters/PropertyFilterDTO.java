@@ -18,6 +18,7 @@ public class PropertyFilterDTO {
     private SortType sortType;
     private List<Long> categoryIds;
     private List<Long> facilityIds;
+    private String address;
     private Boolean isLongTermRent;
     @Min(0)
     private Integer minPrice;

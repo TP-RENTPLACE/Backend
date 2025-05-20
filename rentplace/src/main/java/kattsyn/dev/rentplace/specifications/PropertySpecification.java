@@ -78,11 +78,17 @@ public class PropertySpecification implements Specification<Property> {
             );
         }
 
-        // Фильтр по удобствам
         if (filter.getFacilityIds() != null && !filter.getFacilityIds().isEmpty() && facilityJoin != null) {
             predicate = criteriaBuilder.and(
                     predicate,
                     facilityJoin.get("facilityId").in(filter.getFacilityIds())
+            );
+        }
+
+        if (filter.getAddress() != null && !filter.getAddress().isBlank()) {
+            predicate = criteriaBuilder.and(
+                    predicate,
+                    criteriaBuilder.like(root.get("address"), "%" + filter.getAddress() + "%")
             );
         }
 
