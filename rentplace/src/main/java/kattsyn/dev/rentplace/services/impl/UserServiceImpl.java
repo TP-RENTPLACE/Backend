@@ -136,6 +136,7 @@ public class UserServiceImpl implements UserService {
         updatedUser.setUserId(user.getUserId());
         updatedUser.setRegistrationDate(user.getRegistrationDate());
         updatedUser.setImage(user.getImage());
+        updatedUser.setUserStatus(user.getUserStatus());
 
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), updatedUser);
