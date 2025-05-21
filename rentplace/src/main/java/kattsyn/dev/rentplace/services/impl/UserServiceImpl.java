@@ -161,6 +161,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.fromRegisterRequest(registerRequest);
         user.setRegistrationDate(LocalDate.now());
         user.setRole(Role.ROLE_USER);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
 
         return userRepository.save(user);
     }
