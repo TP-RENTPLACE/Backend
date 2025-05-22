@@ -1,5 +1,6 @@
 package kattsyn.dev.rentplace.repositories;
 
+import kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,5 +48,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             """
     )
     Optional<Reservation> findById(@Param("reservationId") long reservationId);
+
+    @Query("""
+            SELECT NEW kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO(
+                        r.property.propertyId,
+                        r.startDate,
+                        r.endDate,
+                        r.paymentStatus
+                        )
+            FROM Reservation r
+            WHERE r.property.propertyId = :propertyId
+            """)
+    List<PropertyReservationDTO> findAllByPropertyId(@Param("propertyId") long propertyId);
 
 }
