@@ -1,6 +1,7 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
+import kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO;
 import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
@@ -68,6 +69,11 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public List<ReservationDTO> findAllReservationsByRenterEmail(String email) {
         return reservationMapper.fromReservations(reservationRepository.findAllByRenterEmail(email));
+    }
+
+    @Override
+    public List<PropertyReservationDTO> findAllByPropertyId(long propertyId) {
+        return reservationRepository.findAllByPropertyId(propertyId);
     }
 
     @Override
