@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO;
 import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
 import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.services.ReservationService;
@@ -44,6 +45,21 @@ public class ReservationController {
     @GetMapping("/")
     public ResponseEntity<List<ReservationDTO>> getReservations() {
         List<ReservationDTO> reservationDTOS = reservationService.findAllReservations();
+        return ResponseEntity.ok(reservationDTOS);
+    }
+
+    @Operation(
+            summary = "Получение всех бронирований объявления",
+            description = "Позволяет получить все бронирования объявления по его ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyReservationDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    @GetMapping("/property/{id}")
+    public ResponseEntity<List<PropertyReservationDTO>> getReservationsByPropertyId(@PathVariable long id) {
+        List<PropertyReservationDTO> reservationDTOS = reservationService.findAllByPropertyId(id);
         return ResponseEntity.ok(reservationDTOS);
     }
 
