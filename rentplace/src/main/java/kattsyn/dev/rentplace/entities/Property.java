@@ -109,4 +109,7 @@ public class Property {
 
     @ManyToMany(mappedBy = "favourites")
     private Set<User> usersAddedInFavourites = new HashSet<>();
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+    private Set<Reservation> reservations = new HashSet<>();
 }
