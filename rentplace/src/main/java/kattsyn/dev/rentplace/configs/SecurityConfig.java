@@ -93,7 +93,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Set-Cookie"));
+        config.setExposedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Set-Cookie", "User-Agent", "X-Forwarded-For"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 
