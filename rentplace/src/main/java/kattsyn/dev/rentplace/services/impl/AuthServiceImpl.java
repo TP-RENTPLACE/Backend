@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.services.impl;
 
-import io.jsonwebtoken.Claims;
 import io.micrometer.common.lang.NonNull;
 import jakarta.security.auth.message.AuthException;
+import jakarta.servlet.http.HttpServletRequest;
 import kattsyn.dev.rentplace.dtos.requests.JwtRequest;
 import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
 import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
@@ -14,6 +14,7 @@ import kattsyn.dev.rentplace.enums.Role;
 import kattsyn.dev.rentplace.enums.UserStatus;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.services.AuthService;
+import kattsyn.dev.rentplace.services.RefreshTokenService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.auth.JwtProvider;
 import kattsyn.dev.rentplace.services.VerificationCodeService;
@@ -23,8 +24,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,19 +31,16 @@ import java.util.Optional;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
-    //todo: сделать хранение Refresh Токенов в БД, вместе с ip, либо именами устройств.
-    //TODO: также при превышении кол-ва макс устройств разлогинить везде пользователя
-
     private final UserService userService;
-    private final Map<String, String> refreshStorage = new HashMap<>();
     private final JwtProvider jwtProvider;
     private final VerificationCodeService verificationCodeService;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
-    public JwtResponse register(@NonNull RegisterRequest registerRequest) throws AuthException {
+    public JwtResponse register(@NonNull RegisterRequest registerRequest, HttpServletRequest httpServletRequest) throws AuthException {
         User user = userService.createUserWithRegisterRequest(registerRequest);
 
-        return getJwtResponse(user, registerRequest.getEmail(), registerRequest.getCode());
+        return getJwtResponse(user, registerRequest.getEmail(), registerRequest.getCode(), httpServletRequest);
     }
 
     @Override
@@ -65,28 +61,28 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtResponse login(@NonNull JwtRequest authRequest) throws AuthException {
+    public JwtResponse login(@NonNull JwtRequest authRequest, HttpServletRequest httpServletRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
 
-        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode());
+        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode(), httpServletRequest);
     }
 
     @Override
-    public JwtResponse adminLogin(@NonNull JwtRequest authRequest) throws AuthException {
+    public JwtResponse adminLogin(@NonNull JwtRequest authRequest, HttpServletRequest httpServletRequest) throws AuthException {
         final User user = userService.getUserByEmail(authRequest.getEmail());
 
         if (user.getRole() != Role.ROLE_ADMIN) {
             throw new ForbiddenException("You are not allowed to access admin-panel.");
         }
 
-        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode());
+        return getJwtResponse(user, authRequest.getEmail(), authRequest.getCode(), httpServletRequest);
     }
 
-    private JwtResponse getJwtResponse(User user, String email, String code) throws AuthException {
+    private JwtResponse getJwtResponse(User user, String email, String code, HttpServletRequest httpServletRequest) throws AuthException {
         if ((email.equals("testadmin@gmail.com") && code.equals("12345")) || verificationCodeService.validateCode(email, code)) { //todo: delete test user
             final String accessToken = jwtProvider.generateAccessToken(user);
             final String refreshToken = jwtProvider.generateRefreshToken(user);
-            refreshStorage.put(user.getEmail(), refreshToken);
+            refreshTokenService.put(refreshToken, user, httpServletRequest);
             return new JwtResponse(accessToken, refreshToken);
         } else {
             throw new AuthException("Код неправильный");
@@ -98,34 +94,16 @@ public class AuthServiceImpl implements AuthService {
         verificationCodeService.validateCode(request.getEmail(), request.getCode());
     }
 
-    public JwtResponse getAccessToken(@NonNull String refreshToken) {
-        if (jwtProvider.validateRefreshToken(refreshToken)) {
-            final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
-            final String email = claims.getSubject();
-            final String saveRefreshToken = refreshStorage.get(email);
-            if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
-                final User user = userService.getUserByEmail(email);
-                final String accessToken = jwtProvider.generateAccessToken(user);
-                return new JwtResponse(accessToken, null);
-            }
+    public JwtResponse getAccessToken(@NonNull String refreshToken, HttpServletRequest httpServletRequest) {
+        try {
+            return refreshTokenService.refreshAccessToken(refreshToken, httpServletRequest);
+        } catch (AuthException e) {
+            return new JwtResponse(null, null);
         }
-        return new JwtResponse(null, null);
     }
 
-    public JwtResponse refresh(@NonNull String refreshToken) throws AuthException {
-        if (jwtProvider.validateRefreshToken(refreshToken)) {
-            final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
-            final String email = claims.getSubject();
-            final String saveRefreshToken = refreshStorage.get(email);
-            if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
-                final User user = userService.getUserByEmail(email);
-                final String accessToken = jwtProvider.generateAccessToken(user);
-                final String newRefreshToken = jwtProvider.generateRefreshToken(user);
-                refreshStorage.put(user.getEmail(), newRefreshToken);
-                return new JwtResponse(accessToken, newRefreshToken);
-            }
-        }
-        throw new AuthException("Невалидный JWT токен");
+    public JwtResponse refresh(@NonNull String refreshToken, HttpServletRequest request) throws AuthException {
+        return refreshTokenService.refresh(refreshToken, request);
     }
 
     public UserDTO getUserInfo() throws AuthException {
@@ -137,6 +115,4 @@ public class AuthServiceImpl implements AuthService {
         String email = authentication.getName();
         return userService.getUserDTOByEmail(email);
     }
-
-
 }

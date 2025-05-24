@@ -29,6 +29,8 @@ spring:
           ssl:
             enable: false
             #trust: smtp.gmail.com
+server:
+  forward-headers-strategy: NATIVE
 springdoc:
   swagger-ui:
     tags-sorter: alpha
@@ -45,6 +47,7 @@ commission:
   for-owner:
     in-percent: 4
 jwt:
+  max-devices: 5
   expiration-time-in-minutes:
     access: 15
   expiration-time-in-days:

@@ -60,4 +60,7 @@ public class User {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Property> properties = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RefreshToken> tokens = new HashSet<>();
 }
