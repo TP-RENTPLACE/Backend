@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
+import jakarta.servlet.http.HttpServletRequest;
 import kattsyn.dev.rentplace.dtos.requests.CodeRequest;
 import kattsyn.dev.rentplace.dtos.requests.JwtRequest;
 import kattsyn.dev.rentplace.dtos.requests.RefreshJwtRequest;
@@ -38,9 +39,11 @@ public class AuthController {
             description = "Получает email и код с почты. Возвращает JWT токены"
     )
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest/*,
+    public ResponseEntity<JwtResponse> login(HttpServletRequest request, @RequestBody JwtRequest authRequest/*,
                                              HttpServletResponse response*/) throws AuthException {
-        JwtResponse tokens = authService.login(authRequest);
+
+
+        JwtResponse tokens = authService.login(authRequest, request);
 
         /*
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", tokens.getRefreshToken())
@@ -76,10 +79,9 @@ public class AuthController {
             description = "Получает email и код с почты. Возвращает JWT токены. Пускает только администраторов."
     )
     @PostMapping("/admin/login")
-    public ResponseEntity<JwtResponse> adminLogin(@RequestBody JwtRequest authRequest/*,
+    public ResponseEntity<JwtResponse> adminLogin(@RequestBody JwtRequest authRequest, HttpServletRequest httpServletRequest/*,
                                              HttpServletResponse response*/) throws AuthException {
-        JwtResponse tokens = authService.adminLogin(authRequest);
-
+        JwtResponse tokens = authService.adminLogin(authRequest, httpServletRequest);
         return ResponseEntity.ok()
                 .body(tokens);
     }
@@ -89,9 +91,9 @@ public class AuthController {
             description = "Получает email и код с почты, а также имя и фамилию пользователя. Возвращает JWT токены"
     )
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest registerRequest/*,
+    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest registerRequest, HttpServletRequest httpServletRequest/*,
                                              HttpServletResponse response*/) throws AuthException {
-        JwtResponse tokens = authService.register(registerRequest);
+        JwtResponse tokens = authService.register(registerRequest, httpServletRequest);
 
         return ResponseEntity.ok()
                 .body(tokens);
@@ -109,14 +111,13 @@ public class AuthController {
     }
 
 
-
     @Operation(
             summary = "Запрос на обновление AccessToken'а",
             description = "Получает RefreshToken, возвращает новый AccessToken"
     )
     @PostMapping("/token")
-    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request) {
-        final JwtResponse token = authService.getAccessToken(request.getRefreshToken());
+    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request, HttpServletRequest httpServletRequest) throws AuthException {
+        final JwtResponse token = authService.getAccessToken(request.getRefreshToken(), httpServletRequest);
         return ResponseEntity.ok(token);
     }
 
@@ -125,8 +126,8 @@ public class AuthController {
             description = "Принимает еще не истекший RefreshToken и возвращает новый, продленный."
     )
     @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> refresh(/*@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response*/ @RequestBody RefreshJwtRequest request) throws AuthException {
-        JwtResponse jwtResponse = authService.refresh(request.getRefreshToken());
+    public ResponseEntity<JwtResponse> refresh(/*@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response*/ @RequestBody RefreshJwtRequest refreshJwtRequest, HttpServletRequest request) throws AuthException {
+        JwtResponse jwtResponse = authService.refresh(refreshJwtRequest.getRefreshToken(), request);
 
         /*
         Cookie refreshCookie = new Cookie("refreshToken", jwtResponse.getRefreshToken());
