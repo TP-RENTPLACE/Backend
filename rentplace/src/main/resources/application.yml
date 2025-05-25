@@ -61,7 +61,10 @@ openrouter:
     key: ${OPENROUTER_API_KEY}
     model: ${OPENROUTER_API_MODEL}
     default-system-prompt: ${OPENROUTER_API_SYSTEM_PROMPT}
-
+email:
+  retry:
+    delay-ms: 1000
+    max-attempts: 2
 api:
   path: api/v1
 upload:

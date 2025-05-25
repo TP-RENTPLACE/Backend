@@ -81,6 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO) {
         User user = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
         user = userRepository.save(user);
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), user);
