@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -88,7 +89,7 @@ public class PropertyDTO {
     private UserDTO ownerDTO;
 
     @Schema(description = "Фотографии жилья")
-    private Set<ImageDTO> imagesDTOs;
+    private List<ImageDTO> imagesDTOs;
 
     @Schema(description = "Категории жилья")
     private Set<CategoryDTO> categoriesDTOs;
