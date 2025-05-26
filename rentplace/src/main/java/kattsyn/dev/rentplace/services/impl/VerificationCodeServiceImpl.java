@@ -23,7 +23,7 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
     @Override
     public boolean validateCode(String email, String code) {
         VerificationCode verificationCode = verificationCodeRepository.findById(email)
-                .orElseThrow(() -> new NotFoundException(String.format("Verification code with email %s not found", email)));
+                .orElseThrow(() -> new NotFoundException(String.format("Код верификации для почты: %s не найден", email)));
 
         return verificationCode.getCode().equals(code);
     }

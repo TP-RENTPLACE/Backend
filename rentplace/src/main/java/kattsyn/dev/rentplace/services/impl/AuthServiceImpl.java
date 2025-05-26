@@ -90,8 +90,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void validateCode(JwtRequest request) {
-        verificationCodeService.validateCode(request.getEmail(), request.getCode());
+    public void validateCode(JwtRequest request) throws AuthException {
+        if (!verificationCodeService.validateCode(request.getEmail(), request.getCode())) {
+            throw new AuthException("Код неверный");
+        }
     }
 
     public JwtResponse getAccessToken(@NonNull String refreshToken, HttpServletRequest httpServletRequest) {
