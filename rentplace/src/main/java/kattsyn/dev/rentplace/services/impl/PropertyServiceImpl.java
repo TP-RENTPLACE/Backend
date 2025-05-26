@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -102,7 +103,9 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     @Override
     public PropertyDTO findById(long id) {
-        return propertyMapper.fromProperty(getPropertyById(id));
+        PropertyDTO propertyDTO = propertyMapper.fromProperty(getPropertyById(id));
+        propertyDTO.getImagesDTOs().sort(Comparator.comparing(ImageDTO::isPreviewImage).reversed().thenComparing(ImageDTO::getImageId));
+        return propertyDTO;
     }
 
 
