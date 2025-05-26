@@ -66,19 +66,28 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     @Override
     public List<PropertyDTO> findAll() {
-        return propertyMapper.fromProperties(propertyRepository.findAllWithRelations());
+        return returnWithSortedImages(propertyMapper.fromProperties(propertyRepository.findAllWithRelations()));
     }
 
     @Override
     public List<PropertyDTO> findAllByOwnerEmail(String email) {
-        return propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email));
+        return returnWithSortedImages(propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email)));
     }
 
     @Override
     public List<PropertyDTO> findAllByFilter(PropertyFilterDTO filter) {
-        return propertyMapper.fromProperties(
+        return returnWithSortedImages(propertyMapper.fromProperties(
                 propertyRepository.findAll(new PropertySpecification(filter), buildSort(filter.getSortType()))
-        );
+        ));
+    }
+
+    private List<PropertyDTO> returnWithSortedImages(List<PropertyDTO> propertyDTOS) {
+        propertyDTOS.forEach(propertyDTO
+                -> propertyDTO
+                .getImagesDTOs()
+                .sort(Comparator
+                        .comparing(ImageDTO::isPreviewImage).reversed().thenComparing(ImageDTO::getImageId)));
+        return propertyDTOS;
     }
 
     private Sort buildSort(SortType sortType) {
