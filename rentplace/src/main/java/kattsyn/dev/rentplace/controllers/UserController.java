@@ -171,4 +171,23 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(
+            summary = "Удалить свой профиль",
+            description = "Метод, чтобы пользователь мог удалить свой профиль."
+    )
+    @DeleteMapping("/me")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
+            @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<Void> deleteMe(
+            Authentication authentication
+    ) {
+        userService.deleteMe(authentication);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }

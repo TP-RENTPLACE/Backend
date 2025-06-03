@@ -18,6 +18,7 @@ import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,11 +51,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> getUserOptionalByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
     }
 
     @Override
@@ -96,6 +92,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new RuntimeException(String.format("User with id %s not found", id))
         );
+        userRepository.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMe(Authentication authentication) {
+        User user = getUserByEmail(authentication.getName());
+
         userRepository.delete(user);
     }
 
