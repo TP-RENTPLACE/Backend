@@ -9,9 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
-import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.filters.PropertyFilterDTO;
 import kattsyn.dev.rentplace.services.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class PropertyController {
     @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Массовая загрузка фотографий",
-            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 10. Максимальный размер каждого файла - 10MB.")
+            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 20. Максимальный размер каждого файла - 5MB.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageDTO[].class))),
             @ApiResponse(responseCode = "400", description = "Некорректный запрос (превышено кол-во файлов, неверный формат и т.д.)", content = @Content),
@@ -73,6 +74,20 @@ public class PropertyController {
     @GetMapping("/")
     public ResponseEntity<List<PropertyDTO>> getProperties() {
         List<PropertyDTO> properties = propertyService.findAll();
+        return ResponseEntity.ok(properties);
+    }
+
+    @Operation(
+            summary = "Получение всех объявлений, с фильтрацией",
+            description = "Позволяет получить все объявления, с фильтрацией"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @PostMapping(path = "/filtered/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<PropertyDTO>> getPropertiesByFilter(@Valid @ModelAttribute PropertyFilterDTO propertyFilter) {
+        List<PropertyDTO> properties = propertyService.findAllByFilter(propertyFilter);
         return ResponseEntity.ok(properties);
     }
 

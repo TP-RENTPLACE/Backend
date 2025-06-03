@@ -1,8 +1,8 @@
 package kattsyn.dev.rentplace.services;
 
-import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.FacilityDTO;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
 import kattsyn.dev.rentplace.entities.Facility;
 import org.springframework.web.multipart.MultipartFile;
 

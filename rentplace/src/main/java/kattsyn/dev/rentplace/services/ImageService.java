@@ -13,5 +13,6 @@ public interface ImageService {
     void deleteImage(long id);
     Image getImageById(long id);
     Resource getImageResource(Image image);
+    Image save(Image image);
 
 }

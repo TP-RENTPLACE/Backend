@@ -9,9 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
-import kattsyn.dev.rentplace.dtos.UserCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.UserDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.users.UserCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class UserController {
 
     @Operation(
             summary = "Загрузка фотографии для пользователя",
-            description = "Загрузка фотографии для пользователя"
+            description = "Загрузка фотографии для пользователя. Размер фотографии до 5Мб"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
@@ -127,12 +127,31 @@ public class UserController {
             @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,
             Authentication authentication) {
         userService.allowedToEditUser(id, authentication.getName());
-        return ResponseEntity.ok(userService.update(id, userCreateEditDTO));
+        return ResponseEntity.ok(userService.updateUserById(id, userCreateEditDTO));
+    }
+
+    @Operation(
+            summary = "Изменение данных авторизованного пользователя",
+            description = "Метод, для того чтобы пользователь изменил данные своего профиля"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
+            @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')")
+    @SecurityRequirement(name = "JWT")
+    @PatchMapping(path = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserDTO> updateUser(
+            @ModelAttribute @Valid UserCreateEditDTO userCreateEditDTO,
+            Authentication authentication) {
+        return ResponseEntity.ok(userService.updateUserByEmail(authentication.getName(), userCreateEditDTO));
     }
 
     @Operation(
             summary = "Удалить пользователя",
-            description = "Удалить пользователя по ID"
+            description = "Удалить пользователя по ID. Использовать в крайних случаях. При удалении удаляются все его брони и объявления."
     )
     @DeleteMapping("/{id}")
     @ApiResponses(value = {
@@ -149,6 +168,25 @@ public class UserController {
             @Valid @Parameter(description = "id пользователя", example = "1") long id
     ) {
         userService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(
+            summary = "Удалить свой профиль",
+            description = "Метод, чтобы пользователь мог удалить свой профиль."
+    )
+    @DeleteMapping("/me")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Успешно. Пустой ответ", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content),
+            @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<Void> deleteMe(
+            Authentication authentication
+    ) {
+        userService.deleteMe(authentication);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

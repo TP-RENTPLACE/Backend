@@ -1,7 +1,7 @@
 package kattsyn.dev.rentplace.mappers;
 
-import kattsyn.dev.rentplace.dtos.FacilityCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.FacilityDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.facilities.FacilityDTO;
 import kattsyn.dev.rentplace.entities.Facility;
 import org.mapstruct.*;
 

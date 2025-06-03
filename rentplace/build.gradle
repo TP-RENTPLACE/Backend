@@ -25,11 +25,15 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.2.0'
 	implementation 'org.flywaydb:flyway-core:11.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation 'org.flywaydb:flyway-core'
+	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:8.0.1'
+	implementation("commons-codec:commons-codec:1.17.2")
 
 	implementation("org.springframework.boot:spring-boot-starter-mail:3.4.3")
 
@@ -38,6 +42,7 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+	implementation("com.postmarkapp:postmark:1.11.1")
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'

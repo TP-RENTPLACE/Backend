@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kattsyn.dev.rentplace.entities.Image;
-import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.services.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,14 +19,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("${api.path}/images")
@@ -70,59 +66,6 @@ public class ImageController {
         }
     }
 
-    @Operation(
-            summary = "Загрузка фотографии",
-            description = "Загрузка фотографии"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))),
-            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
-    })
-    @SecurityRequirement(name = "JWT")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PostMapping(path = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Image> uploadImage(
-            @Parameter(
-                    description = "Файл фотографии",
-                    required = true,
-                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)
-            ) @RequestParam("file") MultipartFile file,
-            @Parameter(
-                    description = "Тип изображения",
-                    required = true,
-                    schema = @Schema(
-                            implementation = ImageType.class)
-            ) @RequestParam ImageType imageType) { //todo: delete method
-        return ResponseEntity.ok(imageService.uploadImage(file, imageType));
-    }
-
-
-
-    @PostMapping(value = "/multiple/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(
-            summary = "Массовая загрузка фотографий",
-            description = "Загружает несколько фотографий за один запрос. Максимальное количество файлов - 10. Максимальный размер каждого файла - 10MB.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Фотографии успешно загружены", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Image[].class))),
-            @ApiResponse(responseCode = "400", description = "Некорректный запрос (превышено кол-во файлов, неверный формат и т.д.)", content = @Content),
-            @ApiResponse(responseCode = "413", description = "Превышен максимальный размер запроса"),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
-    })
-    @SecurityRequirement(name = "JWT")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<List<Image>> uploadMultipleImages(@Parameter(
-            description = "Массив файлов фотографий",
-            required = true,
-            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(type = "string", format = "binary"))
-    ) @RequestPart("files") MultipartFile[] files) {
-        List<Image> savedImages = new ArrayList<>();
-
-        for (MultipartFile file : files) {
-            savedImages.add(imageService.uploadImage(file));
-        }
-
-        return ResponseEntity.ok(savedImages);
-    }
 
     @Operation(
             summary = "Получить фотографию",

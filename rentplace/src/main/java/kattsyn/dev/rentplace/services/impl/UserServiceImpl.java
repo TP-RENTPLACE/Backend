@@ -1,11 +1,15 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.*;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.UserStatus;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.UserMapper;
@@ -14,11 +18,13 @@ import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.UserService;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public List<UserDTO> findAll() {
-        return userMapper.fromUsers(userRepository.findAll());
+        return userMapper.fromUsers(userRepository.findAllWithRelations());
     }
 
     @Transactional
@@ -43,8 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public Optional<User> getUserOptionalByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
@@ -69,18 +75,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO save(UserDTO userDTO) {
-        User user = userMapper.fromDTO(userDTO);
-        user.setRegistrationDate(LocalDate.now());
-
-        user = userRepository.save(user);
-        return userMapper.fromUser(user);
-    }
-
-    @Transactional
-    @Override
     public UserDTO createWithImage(UserCreateEditDTO userCreateEditDTO) {
         User user = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
         user = userRepository.save(user);
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
             return uploadImage(userCreateEditDTO.getFile(), user);
@@ -98,6 +95,14 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Override
+    @Transactional
+    public void deleteMe(Authentication authentication) {
+        User user = getUserByEmail(authentication.getName());
+
+        userRepository.delete(user);
+    }
+
     @Transactional
     @Override
     public ImageDTO uploadImage(MultipartFile file, long id) {
@@ -111,35 +116,38 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDTO update(long id, UserCreateEditDTO userCreateEditDTO) {
+    public UserDTO updateUserByEmail(String email, UserCreateEditDTO userCreateEditDTO) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException(String.format("User with email %s not found", email))
+        );
+
+        return updateUser(user, userCreateEditDTO);
+    }
+
+    @Transactional
+    @Override
+    public UserDTO updateUserById(long id, UserCreateEditDTO userCreateEditDTO) {
         User user = getUserById(id);
 
-        if (userCreateEditDTO.getName() != null && !userCreateEditDTO.getName().isBlank()) {
-            user.setName(userCreateEditDTO.getName());
-        }
-        if (userCreateEditDTO.getSurname() != null && !userCreateEditDTO.getSurname().isBlank()) {
-            user.setSurname(userCreateEditDTO.getSurname());
-        }
-        if (userCreateEditDTO.getEmail() != null && !userCreateEditDTO.getEmail().isBlank()) {
-            user.setEmail(userCreateEditDTO.getEmail());
-        }
-        if (userCreateEditDTO.getBirthDate() != null) {
-            user.setBirthDate(userCreateEditDTO.getBirthDate());
-        }
+        return updateUser(user, userCreateEditDTO);
+    }
 
-        if (userCreateEditDTO.getGender() != null) {
-            user.setGender(userCreateEditDTO.getGender());
-        }
+    @Transactional
+    @Override
+    public UserDTO updateUser(User user, UserCreateEditDTO userCreateEditDTO) {
 
-        if (userCreateEditDTO.getRole() != null) {
-            user.setRole(userCreateEditDTO.getRole());
-        }
+        User updatedUser = userMapper.fromUserCreateEditDTO(userCreateEditDTO);
+
+        updatedUser.setUserId(user.getUserId());
+        updatedUser.setRegistrationDate(user.getRegistrationDate());
+        updatedUser.setImage(user.getImage());
+        updatedUser.setUserStatus(user.getUserStatus());
 
         if (userCreateEditDTO.getFile() != null && !userCreateEditDTO.getFile().isEmpty()) {
-            return uploadImage(userCreateEditDTO.getFile(), user);
+            return uploadImage(userCreateEditDTO.getFile(), updatedUser);
         }
 
-        return userMapper.fromUser(userRepository.save(user));
+        return userMapper.fromUser(userRepository.save(updatedUser));
     }
 
     @Override
@@ -159,8 +167,33 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.fromRegisterRequest(registerRequest);
         user.setRegistrationDate(LocalDate.now());
         user.setRole(Role.ROLE_USER);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void blockUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_BLOCKED);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void activateUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_ACTIVE);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deactivateUser(long userId) {
+        User user = getUserById(userId);
+        user.setUserStatus(UserStatus.STATUS_INACTIVE);
+        userRepository.save(user);
     }
 
     private UserDTO uploadImage(MultipartFile file, User user) {

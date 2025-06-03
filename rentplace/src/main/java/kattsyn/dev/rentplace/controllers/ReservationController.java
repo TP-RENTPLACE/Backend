@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kattsyn.dev.rentplace.dtos.*;
+import kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.services.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -38,9 +40,26 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ReservationDTO[].class))),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')" )
+    @SecurityRequirement(name = "JWT")
     @GetMapping("/")
     public ResponseEntity<List<ReservationDTO>> getReservations() {
         List<ReservationDTO> reservationDTOS = reservationService.findAllReservations();
+        return ResponseEntity.ok(reservationDTOS);
+    }
+
+    @Operation(
+            summary = "Получение всех бронирований объявления",
+            description = "Позволяет получить все бронирования объявления по его ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PropertyReservationDTO[].class))),
+            @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
+    })
+    @SecurityRequirement(name = "JWT")
+    @GetMapping("/property/{id}")
+    public ResponseEntity<List<PropertyReservationDTO>> getReservationsByPropertyId(@PathVariable long id) {
+        List<PropertyReservationDTO> reservationDTOS = reservationService.findAllByPropertyId(id);
         return ResponseEntity.ok(reservationDTOS);
     }
 
@@ -71,7 +90,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "422", description = "Ошибка валидации", content = @Content),
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "JWT")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDTO> getReservation(@PathVariable
@@ -113,7 +132,6 @@ public class ReservationController {
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
     @SecurityRequirement(name = "JWT")
-    @SecurityRequirement(name = "JWT")
     @PatchMapping(path = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReservationDTO> updateReservation(@PathVariable @Parameter(description = "id бронирования для изменения") long id,
                                                             @Valid @ModelAttribute ReservationCreateEditDTO reservationCreateEditDTO) {
@@ -131,7 +149,6 @@ public class ReservationController {
             @ApiResponse(responseCode = "500", description = "Непредвиденная ошибка со стороны сервера", content = @Content)
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_USER')" )
-    @SecurityRequirement(name = "JWT")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<ReservationDTO> deleteReservation(
             @PathVariable

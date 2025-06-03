@@ -82,7 +82,7 @@ public class Property {
     private User owner;
 
     @Schema(description = "Фотографии жилья")
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.LAZY)
     @JoinTable(name = "properties_images",
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id")
@@ -90,7 +90,7 @@ public class Property {
     private Set<Image> images = new HashSet<>();
 
     @Schema(description = "Категории жилья")
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "properties_categories",
             joinColumns = @JoinColumn(name = "property_id"),
@@ -99,7 +99,7 @@ public class Property {
     private Set<Category> categories = new HashSet<>();
 
 
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(
             name = "properties_facilities",
             joinColumns = @JoinColumn(name = "property_id"),
@@ -107,4 +107,9 @@ public class Property {
     )
     private Set<Facility> facilities = new HashSet<>();
 
+    @ManyToMany(mappedBy = "favourites")
+    private Set<User> usersAddedInFavourites = new HashSet<>();
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL)
+    private Set<Reservation> reservations = new HashSet<>();
 }

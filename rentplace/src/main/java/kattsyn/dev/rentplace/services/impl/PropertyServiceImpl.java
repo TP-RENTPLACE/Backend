@@ -1,14 +1,16 @@
 package kattsyn.dev.rentplace.services.impl;
 
 import jakarta.transaction.Transactional;
-import kattsyn.dev.rentplace.dtos.ImageDTO;
-import kattsyn.dev.rentplace.dtos.PropertyCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.images.ImageDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.properties.PropertyDTO;
+import kattsyn.dev.rentplace.dtos.filters.PropertyFilterDTO;
 import kattsyn.dev.rentplace.entities.Image;
 import kattsyn.dev.rentplace.entities.Property;
 import kattsyn.dev.rentplace.entities.User;
 import kattsyn.dev.rentplace.enums.ImageType;
 import kattsyn.dev.rentplace.enums.Role;
+import kattsyn.dev.rentplace.enums.SortType;
 import kattsyn.dev.rentplace.exceptions.ForbiddenException;
 import kattsyn.dev.rentplace.exceptions.NotFoundException;
 import kattsyn.dev.rentplace.mappers.ImageMapper;
@@ -17,12 +19,15 @@ import kattsyn.dev.rentplace.repositories.PropertyRepository;
 import kattsyn.dev.rentplace.services.ImageService;
 import kattsyn.dev.rentplace.services.PropertyService;
 import kattsyn.dev.rentplace.services.UserService;
+import kattsyn.dev.rentplace.specifications.PropertySpecification;
 import kattsyn.dev.rentplace.utils.PathResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -61,12 +66,39 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     @Override
     public List<PropertyDTO> findAll() {
-        return propertyMapper.fromProperties(propertyRepository.findAllWithRelations());
+        return returnWithSortedImages(propertyMapper.fromProperties(propertyRepository.findAllWithRelations()));
     }
 
     @Override
     public List<PropertyDTO> findAllByOwnerEmail(String email) {
-        return propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email));
+        return returnWithSortedImages(propertyMapper.fromProperties(propertyRepository.findAllByOwnerEmail(email)));
+    }
+
+    @Override
+    public List<PropertyDTO> findAllByFilter(PropertyFilterDTO filter) {
+        return returnWithSortedImages(propertyMapper.fromProperties(
+                propertyRepository.findAll(new PropertySpecification(filter), buildSort(filter.getSortType()))
+        ));
+    }
+
+    private List<PropertyDTO> returnWithSortedImages(List<PropertyDTO> propertyDTOS) {
+        propertyDTOS.forEach(propertyDTO
+                -> propertyDTO
+                .getImagesDTOs()
+                .sort(Comparator
+                        .comparing(ImageDTO::isPreviewImage).reversed().thenComparing(ImageDTO::getImageId)));
+        return propertyDTOS;
+    }
+
+    private Sort buildSort(SortType sortType) {
+        if (sortType == null) return Sort.unsorted();
+
+        return switch (sortType) {
+            case MOST_OLD -> Sort.by(Sort.Order.asc("propertyId"));
+            case MOST_RECENT -> Sort.by(Sort.Order.desc("propertyId"));
+            case MOST_EXPENSIVE -> Sort.by(Sort.Order.desc("cost"));
+            case MOST_CHEAP -> Sort.by(Sort.Order.asc("cost"));
+        };
     }
 
     @Override
@@ -80,7 +112,9 @@ public class PropertyServiceImpl implements PropertyService {
     @Transactional
     @Override
     public PropertyDTO findById(long id) {
-        return propertyMapper.fromProperty(getPropertyById(id));
+        PropertyDTO propertyDTO = propertyMapper.fromProperty(getPropertyById(id));
+        propertyDTO.getImagesDTOs().sort(Comparator.comparing(ImageDTO::isPreviewImage).reversed().thenComparing(ImageDTO::getImageId));
+        return propertyDTO;
     }
 
 
@@ -132,8 +166,14 @@ public class PropertyServiceImpl implements PropertyService {
         String path = PathResolver.resolvePath(ImageType.PROPERTY, property.getPropertyId());
         List<Image> savedImages = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            Image image = imageService.uploadImage(file, path);
+        for (int i = 0; i < files.length; i++) {
+            Image image = imageService.uploadImage(files[i], path);
+
+            if (i == 0 && property.getImages().isEmpty()) {
+                image.setPreviewImage(true);
+                imageService.save(image);
+            }
+
             property.getImages().add(image);
             savedImages.add(image);
         }

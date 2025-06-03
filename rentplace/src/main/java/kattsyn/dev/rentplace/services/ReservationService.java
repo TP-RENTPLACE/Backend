@@ -1,7 +1,8 @@
 package kattsyn.dev.rentplace.services;
 
-import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.ReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.PropertyReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Reservation;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,7 @@ public interface ReservationService {
     List<ReservationDTO> findAllReservations();
 
     List<ReservationDTO> findAllReservationsByRenterEmail(String email);
+
+    List<PropertyReservationDTO> findAllByPropertyId(long propertyId);
 
 }

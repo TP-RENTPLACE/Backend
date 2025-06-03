@@ -1,25 +1,28 @@
 package kattsyn.dev.rentplace.services;
 
 import jakarta.security.auth.message.AuthException;
-import kattsyn.dev.rentplace.auth.JwtAuthentication;
-import kattsyn.dev.rentplace.dtos.JwtRequest;
-import kattsyn.dev.rentplace.dtos.JwtResponse;
-import kattsyn.dev.rentplace.dtos.RegisterRequest;
-import kattsyn.dev.rentplace.dtos.UserDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import kattsyn.dev.rentplace.dtos.requests.JwtRequest;
+import kattsyn.dev.rentplace.dtos.responses.CodeResponse;
+import kattsyn.dev.rentplace.dtos.responses.JwtResponse;
+import kattsyn.dev.rentplace.dtos.requests.RegisterRequest;
+import kattsyn.dev.rentplace.dtos.users.UserDTO;
 
 public interface AuthService {
 
-    JwtResponse login(JwtRequest authRequest) throws AuthException;
+    CodeResponse getCodeResponse(String email);
 
-    JwtResponse register(RegisterRequest registerRequest) throws AuthException;
+    JwtResponse login(JwtRequest authRequest, HttpServletRequest httpServletRequest) throws AuthException;
 
-    JwtResponse getAccessToken(String refreshToken);
+    JwtResponse adminLogin(JwtRequest authRequest, HttpServletRequest httpServletRequest) throws AuthException;
 
-    JwtResponse refresh(String refreshToken) throws AuthException;
+    JwtResponse register(RegisterRequest registerRequest, HttpServletRequest httpServletRequest) throws AuthException;
 
-    JwtAuthentication getAuthInfo();
+    JwtResponse getAccessToken(String refreshToken, HttpServletRequest httpServletRequest) throws AuthException;
+
+    JwtResponse refresh(String refreshToken, HttpServletRequest request) throws AuthException;
 
     UserDTO getUserInfo() throws AuthException;
 
-    boolean validateCode(JwtRequest request) throws AuthException;
+    void validateCode(JwtRequest request) throws AuthException;
 }

@@ -1,7 +1,7 @@
 package kattsyn.dev.rentplace.mappers;
 
-import kattsyn.dev.rentplace.dtos.ReservationCreateEditDTO;
-import kattsyn.dev.rentplace.dtos.ReservationDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationCreateEditDTO;
+import kattsyn.dev.rentplace.dtos.reservations.ReservationDTO;
 import kattsyn.dev.rentplace.entities.Property;
 import kattsyn.dev.rentplace.entities.Reservation;
 import kattsyn.dev.rentplace.entities.User;
